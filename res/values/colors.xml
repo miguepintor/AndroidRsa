@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="azul_ice">#34a4ce</color>
+    <color name="blanco">#FFFFFF</color>
+    <color name="gris">#AAAAAA</color>
+    <color name="verde">#99cc00</color>
+    <color name="rojo">#cc0000</color>
+    <color name="amarillo">#FFBB33</color>
+    <color name="verde_oscuro">#669900</color>
+    <color name="negro">#000000</color>
+    <color name="amarillito">#e1dc5a</color>
+    <color name="rojito">#ea7a7a</color>
+    <color name="Verdecillo">#ECFFDD</color>
+    <color name="grisecillo">#D8D8D8</color>
+
+</resources>

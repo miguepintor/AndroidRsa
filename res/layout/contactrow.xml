@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/linearLayout1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/a9p_09_11_00062" >
+
+        <ImageView
+            android:id="@+id/avatar"
+            android:layout_width="50dip"
+            android:layout_height="50dip"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center_vertical"
+            android:layout_marginBottom="5dip"
+            android:layout_marginLeft="5dip"
+            android:layout_marginRight="5dip"
+            android:layout_marginTop="5dip"
+            android:layout_weight="0.10"
+            android:src="@drawable/ic_launcher" />
+
+
+        <TextView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/nombre"
+            android:layout_width="5dip"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="0.80"
+            android:shadowColor="#888"
+            android:shadowDy="1.0"
+            android:shadowRadius="1"
+            android:text="Nombre"
+            android:textColor="@color/negro"
+            android:textSize="14dip" />
+
+        <ImageView
+            android:id="@+id/iconsec"
+            android:layout_width="25dip"
+            android:layout_height="25dip"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="1dp"
+            android:src="@drawable/ic_launcher" 
+            android:layout_weight="0.05"/>
+
+        <ImageView
+            android:id="@+id/icon"
+            android:layout_width="25dip"
+            android:layout_height="25dip"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="1dp"
+            android:src="@drawable/status_away" 
+            android:layout_weight="0.05"/>
+    </LinearLayout>

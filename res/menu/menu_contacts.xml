@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+  xmlns:android="http://schemas.android.com/apk/res/android"> 
+    
+<item android:id="@+id/MenuToggle" android:title="Show/Hide"
+      android:icon="@drawable/ic_menu_toggle">
+    
+</item>
+<item android:id="@+id/MenuChangeState" android:title="Estado"
+      android:icon="@drawable/ic_menu_state">
+    <menu 
+        xmlns:android="http://schemas.android.com/apk/res/android">
+    	<group android:checkableBehavior="single">
+        	<item android:id="@+id/available"
+              android:title="available" />
+	        <item android:id="@+id/away"
+              android:title="away" />
+	        <item android:id="@+id/busy"
+              android:title="busy" />	        
+	        <item android:id="@+id/unavailable"
+              android:title="unavailable" />
+    	</group>	       
+    </menu>
+</item> 
+</menu>

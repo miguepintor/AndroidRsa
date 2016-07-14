@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:background="@drawable/a9p_09_11_00846">
+
+    <ListView
+        android:id="@android:id/list"
+        android:layout_width="match_parent"
+        android:layout_height="357dp"
+        android:layout_weight="0.91" 
+        android:clickable="false">
+    </ListView>
+
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:baselineAligned="true"
+        android:orientation="horizontal"
+        android:paddingBottom="5dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp" >
+
+        <EditText
+            android:id="@+id/textInput"
+            android:layout_width="0dip"
+            android:layout_height="45dp"
+            android:layout_weight="1" >
+            <requestFocus>
+            </requestFocus>
+        </EditText>
+
+        <Button
+            android:id="@+id/btnSend"
+            android:layout_width="125dp"
+            android:layout_height="45dp"
+            android:text="Send" 
+            android:onClick="send">
+        </Button>
+    </LinearLayout>
+
+</LinearLayout>

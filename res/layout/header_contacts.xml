@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/Title_contacts"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/a9p_09_11_00304"
+    android:gravity="center"
+    android:shadowColor="#888"
+    android:shadowDy="1.0"
+    android:shadowRadius="1"
+    android:text="Contactos"
+    android:textColor="#FFFFFF"
+    android:textSize="35dip" />

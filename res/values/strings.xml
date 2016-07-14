@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Hello World, AndroidRsaActivity!</string>
+    <string name="app_name">AndroidRsa</string>
+    <string name="login">Login</string>
+    <string name="password">Password</string>
+    <string name="register">Register</string>
+    <string name="preferences">Preferences</string>
+    <string name="change_password">Change Password</string>
+    <string name="user">User</string>
+    <string name="enter_user">Enter your user name&#8230;</string>
+    <string name="enter_password">Enter your password&#8230;</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="enter_confirm_password">Re-enter password&#8230;</string>
+    <string name="image_description">Pick your avatar&#8230;</string>
+    <string name="done">Done</string>
+    <string name="certificate">Certificate</string>
+    <string name="choose_certificate">Choose certificate</string>
+    <string name="pick_photo">Choose your avatar</string>
+    <string name="default_host">talk.google.com</string>
+    <string name="default_port">5222</string>
+    <string name="default_service">gmail.com</string>
+    <string name="default_userid">xxxxxx@gmail.com</string>
+    <string name="first_time_configuration">This is the first time that you run the application. Please choose an avatar and the certificate for the communication (the private key must be in the same folder starting with &quot;key_[name of the cert]&quot; E.G. key_C1.pem).</string>
+    <string name="ok">Ok</string>
+    <string name="not_found">Files not found</string>
+    <string name="choose_file">Choose your file</string>
+    <string name="not_chosen">Image or certificate not chosen.</string>
+    <string name="key_not_found">Key not found!!</string>
+    <string name="encoding">Encoding</string>
+    <string name="saved">Saved</string>
+    <string name="saving">Saving</string>
+    <string name="decoding">Decoding</string>
+    <string name="error_image_too_large">Error, image too large</string>
+    <string name="no_stego_image">No stego image</string>
+    <string name="servers">Servers</string>
+    <string name="info_r_u_sure_permanently">Are your sure?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="button_clean">Clean</string>
+    <string name="button_accept">Accept</string>
+    <string name="host">Host</string>
+    <string name="port">Port</string>
+    <string name="service">Service</string>
+    <string name="info_empty_fields">There are empty fields. Please, fill them.</string>
+    <string name="invalid_certificate">Invalid certificate file</string>
+    <string name="invalid_key">Invalid Key file</string>
+    <string-array name="services_array">
+        <item>Gmail</item>
+        <item>Facebook</item>
+        <item>Jabber</item>
+        <item>Windows Live</item>
+    </string-array>
+    <string name="invalid_sign_certificate">Invalid sign of certificate</string>
+    <string name="image_too_large">The image is too large</string>
+    <string name="image_size_fail">The size of the image is too large.</string>
+    <string name="connection_error">Connection error. Pleas, try again.</string>
+    <string name="run_configuration_question">Do you want to pick another certificate ?</string>
+    <string name="hora_default">hora</string>
+    
+
+</resources>

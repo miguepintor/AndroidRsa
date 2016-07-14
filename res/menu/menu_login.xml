@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/button_register"
+        android:icon="@drawable/ic_preferencias"
+        android:title="@string/register">
+    </item>
+    <item
+        android:id="@+id/button_change_password"
+        android:title="@string/change_password"
+        android:icon="@drawable/ic_menu_my_account">
+    </item>
+
+</menu>
