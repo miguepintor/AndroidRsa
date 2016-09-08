@@ -91,18 +91,6 @@ public class LoginActivity extends Activity {
 			Log.i(TAG, "Encontrado user por defecto: " + userid);
 			e.setText(userid);
 		}
-		String service = prefs.getString(AndroidRsaConstants.SERVICE, "default");
-		if (!service.equals("default")) {
-			Spinner spinner = (Spinner) findViewById(R.id.spinner);
-			if (service.equals("Gmail"))
-				spinner.setSelection(0);
-			else if (service.equals("Facebook"))
-				spinner.setSelection(1);
-			else if (service.equals("Jabber"))
-				spinner.setSelection(2);
-			else
-				spinner.setSelection(3);
-		}
 	}
 
 	public void login(View v) {

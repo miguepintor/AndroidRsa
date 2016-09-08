@@ -7,6 +7,7 @@ import java.util.HashMap;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.provider.ProviderManager;
+import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.packet.VCard;
 import org.jivesoftware.smackx.provider.VCardProvider;
 
@@ -56,7 +57,7 @@ public class AvatarsCache {
             ProviderManager.getInstance().addIQProvider("vCard",
                     "vcard-temp",
                     new VCardProvider());
-            vCard.load(Conexion.getInstance(), jid);
+            vCard.load(Conexion.getInstance(), StringUtils.parseBareAddress(jid));
             if (vCard.getAvatar() != null) {
                 byte[] avatarRaw = vCard.getAvatar();
                 if (avatarRaw.length != 0) {

@@ -40,178 +40,173 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 public class ChatActivity extends ListActivity {
-    private static final String TAG = "ChatActivity";
-    private Connection connection;
-    public ChatMan chatMan;
-    private Chat chat = null;
-    private Roster roster;
-    private static ArrayList<Message> listMessages = new ArrayList<Message>();
-    private ChatAdapter adapter;
-    private static ListView myListView;
-    private String destJid;
-    private String myJid;
-    private boolean cipher;
-    private Certificate cert;
-    private String passPhrase;
-    private Context context;
+	private static final String TAG = "ChatActivity";
+	private Connection connection;
+	public ChatMan chatMan;
+	private Chat chat = null;
+	private Roster roster;
+	private static ArrayList<Message> listMessages = new ArrayList<Message>();
+	private ChatAdapter adapter;
+	private static ListView myListView;
+	private String destJid;
+	private String myJid;
+	private boolean cipher;
+	private Certificate cert;
+	private String passPhrase;
+	private Context context;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        context = getApplicationContext();
-        this.connection = Conexion.getInstance();
-        this.roster = RosterManager.getRosterInstance();
-        chatMan = ContactsActivity.chatMan;
-        chat = chatMan.chat;
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.chat);
-        destJid = getIntent().getStringExtra("destJid");
-        myJid = this.connection.getUser();
-        cipher = RosterManager.isSecure(destJid);
-        Bundle bundle = getIntent().getExtras();
-        passPhrase = bundle.getString(AndroidRsaConstants.PASSPHRASE);
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		context = getApplicationContext();
+		this.connection = Conexion.getInstance();
+		this.roster = RosterManager.getRosterInstance();
+		chatMan = ContactsActivity.chatMan;
+		chat = chatMan.chat;
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.chat);
+		destJid = getIntent().getStringExtra("destJid");
+		myJid = this.connection.getUser();
+		cipher = RosterManager.isSecure(destJid);
+		Bundle bundle = getIntent().getExtras();
+		passPhrase = bundle.getString(AndroidRsaConstants.PASSPHRASE);
 
-        String parsedDest = StringUtils.parseBareAddress(destJid);
-        Log.d(TAG, "Creado chat con " + roster.getEntry(parsedDest).getName() + " cifrado="
-                + cipher);
+		Log.d(TAG, "Creado chat con " + roster.getEntry(StringUtils.parseBareAddress(destJid)).getName() + " cifrado="
+				+ cipher);
 
-        if (chat == null) {
-            chatMan.createChat(destJid, messageListener);
-            chat = chatMan.getChat();
-            if (cipher) {
-                Message m = new Message(destJid);
-                try {
-                    chat.sendMessage(m);
-                } catch (XMPPException e) {
-                    e.printStackTrace();
-                }
-            }
-        } else {
-            chat.addMessageListener(messageListener);
-        }
+		if (chat == null) {
+			chatMan.createChat(destJid, messageListener);
+			chat = chatMan.getChat();
+			if (cipher) {
+				Message m = new Message(destJid);
+				try {
+					chat.sendMessage(m);
+				} catch (XMPPException e) {
+					e.printStackTrace();
+				}
+			}
+		} else {
+			chat.addMessageListener(messageListener);
+		}
 
-        adapter = new ChatAdapter(this, listMessages);
-        setListAdapter(adapter);
-        myListView = getListView();
-        myListView.setDivider(null);
+		adapter = new ChatAdapter(this, listMessages);
+		setListAdapter(adapter);
+		myListView = getListView();
+		myListView.setDivider(null);
 
-        if (cipher) {
-            Bitmap bm = AvatarsCache.getAvatar(destJid);
-            try {
-                cert = Decode.decode(bm);
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (CertificateException e) {
-                e.printStackTrace();
-            }
+		if (cipher) {
+			Bitmap bm = AvatarsCache.getAvatar(destJid);
+			try {
+				cert = Decode.decode(bm);
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (CertificateException e) {
+				e.printStackTrace();
+			}
 
-        }
-    }
+		}
+	}
 
-    public void animate(View view) {
-        Animation animation = new AlphaAnimation(0.0f, 1.0f);
-        animation.setDuration(1000);
-        animation.setStartOffset(500);
-        view.startAnimation(animation);
-    }
+	public void animate(View view) {
+		Animation animation = new AlphaAnimation(0.0f, 1.0f);
+		animation.setDuration(1000);
+		animation.setStartOffset(500);
+		view.startAnimation(animation);
+	}
 
-    public void send(View view) {
-        Message message = new Message(destJid);
-        EditText editText = (EditText) findViewById(R.id.textInput);
-        String plainText = editText.getText().toString();
-        editText.setText("");
+	public void send(View view) {
+		Message message = new Message(destJid);
+		EditText editText = (EditText) findViewById(R.id.textInput);
+		String plainText = editText.getText().toString();
+		editText.setText("");
 
-        message.setFrom(myJid);
-        message.setTo(destJid);
+		message.setFrom(myJid);
+		message.setTo(destJid);
 
-        Message m = new Message();
-        m.setFrom(myJid);
-        m.setBody(plainText);
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-        m.setSubject(sdf.format(new Date()));
-        listMessages.add(m);
-        refreshAdapter();
-        myListView.smoothScrollToPosition(adapter.getCount() - 1);
+		Message m = new Message();
+		m.setFrom(myJid);
+		m.setBody(plainText);
+		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+		m.setSubject(sdf.format(new Date()));
+		listMessages.add(m);
+		refreshAdapter();
+		myListView.smoothScrollToPosition(adapter.getCount() - 1);
 
-        if (!cipher) {
-            try {
-                message.setBody(plainText);
-                chatMan.getChat().sendMessage(message);
-                Log.d(TAG, "Enviando: " + message.getBody());
+		if (!cipher) {
+			try {
+				message.setBody(plainText);
+				chatMan.getChat().sendMessage(message);
+				Log.d(TAG, "Enviando: " + message.getBody());
 
-            } catch (XMPPException e) {
-                Log.d(TAG, "ERROR al enviar mensaje");
-            }
-        }
-        else {
-            try {
-                String encodedMessage = RSA.cipher(plainText,
-                        cert.getPublicKey());
-                message.setBody(encodedMessage);
-                chatMan.getChat().sendMessage(message);
-                Log.d(TAG, "Enviando cifrado: " + message.getBody() + " " + plainText);
+			} catch (XMPPException e) {
+				Log.d(TAG, "ERROR al enviar mensaje");
+			}
+		} else {
+			try {
+				String encodedMessage = RSA.cipher(plainText, cert.getPublicKey());
+				message.setBody(encodedMessage);
+				chatMan.getChat().sendMessage(message);
+				Log.d(TAG, "Enviando cifrado: " + message.getBody() + " " + plainText);
 
-            } catch (Exception e) {
-                Log.d(TAG, "PETO ENVIANDO CIFRADOOOO");
-                e.printStackTrace();
-            }
-        }
-    }
+			} catch (Exception e) {
+				Log.d(TAG, "PETO ENVIANDO CIFRADOOOO");
+				e.printStackTrace();
+			}
+		}
+	}
 
-    private MessageListener messageListener = new MessageListener() {
-        public void processMessage(Chat chat, Message message) {
-            if ((message.getBody() != null) && (!message.getType().equals(Message.Type.error))) {
-                if (!cipher) {
+	private MessageListener messageListener = new MessageListener() {
+		public void processMessage(Chat chat, Message message) {
+			if ((message.getBody() != null) && (!message.getType().equals(Message.Type.error))) {
+				if (!cipher) {
 
-                    Log.i(TAG, "Recibido mensaje plano: " + message.getBody());
-                    listMessages.add(message);
-                    refreshAdapter();
-                    myListView.smoothScrollToPosition(adapter.getCount() - 1);
-                }
-                else {
+					Log.i(TAG, "Recibido mensaje plano: " + message.getBody());
+					listMessages.add(message);
+					refreshAdapter();
+					myListView.smoothScrollToPosition(adapter.getCount() - 1);
+				} else {
 
-                    try {
-                        PrivateKey pk = RSA.getPrivateKeyDecryted(KeyStore.getInstance().getPk(),
-                                passPhrase);
-                        String decodedMessage = RSA.decipher(message.getBody(), pk);
-                        Log.i(TAG, "Recibido mensaje cifrado: " + decodedMessage);
+					try {
+						PrivateKey pk = RSA.getPrivateKeyDecryted(KeyStore.getInstance().getPk(), passPhrase);
+						String decodedMessage = RSA.decipher(message.getBody(), pk);
+						Log.i(TAG, "Recibido mensaje cifrado: " + decodedMessage);
 
-                        Message m = new Message();
-                        m.setFrom(message.getFrom());
-                        m.setTo(message.getTo());
+						Message m = new Message();
+						m.setFrom(message.getFrom());
+						m.setTo(message.getTo());
 
-                        m.setBody(decodedMessage);
-                        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-                        m.setSubject(sdf.format(new Date()));
-                        listMessages.add(m);
-                        refreshAdapter();
-                        myListView.smoothScrollToPosition(adapter.getCount() - 1);
+						m.setBody(decodedMessage);
+						SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+						m.setSubject(sdf.format(new Date()));
+						listMessages.add(m);
+						refreshAdapter();
+						myListView.smoothScrollToPosition(adapter.getCount() - 1);
 
-                    } catch (Exception e) {
-                        Log.d(TAG, "PETO AL DESCIFRAR");
-                        e.printStackTrace();
+					} catch (Exception e) {
+						Log.d(TAG, "PETO AL DESCIFRAR");
+						e.printStackTrace();
 
-                    }
+					}
 
-                }
-            }
+				}
+			}
 
-        }
+		}
 
-    };
+	};
 
-    private void refreshAdapter() {
-        runOnUiThread(new Runnable() {
-            public void run() {
-                adapter.notifyDataSetChanged();
-            }
-        });
-    }
+	private void refreshAdapter() {
+		runOnUiThread(new Runnable() {
+			public void run() {
+				adapter.notifyDataSetChanged();
+			}
+		});
+	}
 
-    @Override
-    public void onBackPressed() {
-        chatMan.chat = null;
-        chat = null;
-        super.onBackPressed();
-    }
+	@Override
+	public void onBackPressed() {
+		chatMan.chat = null;
+		chat = null;
+		super.onBackPressed();
+	}
 
 }
