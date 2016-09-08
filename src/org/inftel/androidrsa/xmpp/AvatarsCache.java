@@ -72,6 +72,7 @@ public class AvatarsCache {
             }
         } catch (XMPPException e) {
             e.printStackTrace();
+            Log.e(TAG, "Error al recuperar el VCARD");
             return null;
         }
     }

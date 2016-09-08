@@ -34,6 +34,7 @@ public class AndroidRsaConstants {
             + File.separator + "decoded_cert.crt";
     public static final String SERVERS_FILE_PATH = EXTERNAL_SD_PATH
             + File.separator + "androidrsa_servers.srv";
+    public static final String ANDROIDRSA_APP_NAME="androidRsa";
 
     // Constants for intents
 
@@ -62,7 +63,13 @@ public class AndroidRsaConstants {
     public static String OWN_ALIAS = "own";
 
     // Services
+    
     public static String GMAIL_HOST = "talk.google.com";
     public static int GMAIL_PORT = 5222;
     public static String GMAIL_SERVICE = "gmail.com";
+    
+    public static String OPENFIRE_HOST = "192.168.1.3";
+    public static int OPENFIRE_PORT = 5222;
+    public static String OPENFIRE_SERVICE = "localhost";
+    
 }
