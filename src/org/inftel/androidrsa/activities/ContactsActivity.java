@@ -247,9 +247,10 @@ public class ContactsActivity extends ListActivity {
 	}
 
 	public void removePresence(Presence presence) {
-		for (Presence p : listaPresences) {
+		for(Iterator<Presence> it = listaPresences.iterator(); it.hasNext();){
+			Presence p = it.next();
 			if (StringUtils.parseBareAddress(p.getFrom()).equals(StringUtils.parseBareAddress(presence.getFrom()))) {
-				listaPresences.remove(p);
+				it.remove();
 			}
 		}
 	}
