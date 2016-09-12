@@ -141,10 +141,12 @@ public class ContactsActivity extends ListActivity {
 
 		myListView.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				Intent i = new Intent(getApplicationContext(), ChatActivity.class);
-				i.putExtra("destJid", listaPresences.get(position - 1).getFrom());
-				i.putExtra(AndroidRsaConstants.PASSPHRASE, passPhrase);
-				startActivity(i);
+				if (position > 0) {
+					Intent i = new Intent(getApplicationContext(), ChatActivity.class);
+					i.putExtra("destJid", listaPresences.get(position - 1).getFrom());
+					i.putExtra(AndroidRsaConstants.PASSPHRASE, passPhrase);
+					startActivity(i);
+				}
 			}
 
 		});
@@ -166,10 +168,10 @@ public class ContactsActivity extends ListActivity {
 				Log.d(TAG, "Presence changed: " + presence.getFrom() + " " + presence.getMode());
 				// loadContacts();
 				removePresence(presence);
-				
+
 				RosterEntry entry = roster.getEntry(StringUtils.parseBareAddress(presence.getFrom()));
 				String name = entry.getName() == null ? StringUtils.parseName(presence.getFrom()) : entry.getName();
-				
+
 				presence.setProperty("name", name);
 				listaPresences.add(presence);
 				Collections.sort(listaPresences, new PresenceComparator());
@@ -247,7 +249,7 @@ public class ContactsActivity extends ListActivity {
 	}
 
 	public void removePresence(Presence presence) {
-		for(Iterator<Presence> it = listaPresences.iterator(); it.hasNext();){
+		for (Iterator<Presence> it = listaPresences.iterator(); it.hasNext();) {
 			Presence p = it.next();
 			if (StringUtils.parseBareAddress(p.getFrom()).equals(StringUtils.parseBareAddress(presence.getFrom()))) {
 				it.remove();
