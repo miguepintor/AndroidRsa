@@ -1,14 +1,12 @@
 
 package org.etsit.uma.androidrsa.activities;
 
-import java.io.IOException;
 import java.security.PrivateKey;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
 import javax.security.cert.Certificate;
-import javax.security.cert.CertificateException;
 
 import org.etsit.uma.androidrsa.R;
 import org.etsit.uma.androidrsa.adapters.ChatAdapter;
@@ -21,15 +19,12 @@ import org.etsit.uma.androidrsa.xmpp.ChatMan;
 import org.etsit.uma.androidrsa.xmpp.Conexion;
 import org.etsit.uma.androidrsa.xmpp.RosterManager;
 import org.jivesoftware.smack.Chat;
-import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.MessageListener;
-import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smack.util.StringUtils;
 
 import android.app.ListActivity;
-import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
@@ -41,66 +36,130 @@ import android.widget.ListView;
 
 public class ChatActivity extends ListActivity {
 	private static final String TAG = "ChatActivity";
-	private Connection connection;
-	public ChatMan chatMan;
-	private Chat chat = null;
-	private Roster roster;
-	private static ArrayList<Message> listMessages = new ArrayList<Message>();
+	private ArrayList<Message> listMessages = new ArrayList<Message>();
 	private ChatAdapter adapter;
-	private static ListView myListView;
-	private String destJid;
+	private ListView myListView;
+
 	private String myJid;
-	private boolean cipher;
-	private Certificate cert;
 	private String passPhrase;
-	private Context context;
+
+	private Certificate destCert;
+	private String destJid;
+	private boolean cipher;
+
+	private boolean backPressed = false;
+
+	private MessageListener messageListener = new MessageListener() {
+		public void processMessage(Chat chat, Message message) {
+			if ((message.getBody() != null) && (!message.getType().equals(Message.Type.error))) {
+				if (backPressed) {
+					backPressed = false;
+					Intent i = new Intent(ChatActivity.this, ChatActivity.class);
+					i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+					i.putExtra(AndroidRsaConstants.DEST_JID, chat.getParticipant());
+					startActivity(i);
+				}
+				setDestinationProperties(chat.getParticipant());
+				
+				Message copyMessage = new Message();
+				copyMessage.setFrom(message.getFrom());
+				copyMessage.setTo(message.getTo());
+				SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+				copyMessage.setSubject(sdf.format(new Date()));
+				
+				if (cipher) {
+					try {
+						PrivateKey pk = RSA.getPrivateKeyDecryted(KeyStore.getInstance().getPk(), passPhrase);
+						String decodedBody = RSA.decipher(message.getBody(), pk);
+						Log.i(TAG, "Recibido mensaje cifrado: " + decodedBody);
+						copyMessage.setBody(decodedBody);
+					} catch (Exception e) {
+						Log.e(TAG, "Error al descifrar");
+						e.printStackTrace();
+					}
+				} else {
+					copyMessage.setBody(message.getBody());
+					Log.i(TAG, "Recibido mensaje plano: " + message.getBody());
+				}
+				
+				listMessages.add(copyMessage);
+				refreshAdapter();
+				myListView.smoothScrollToPosition(adapter.getCount() - 1);
+			}
+
+		}
+
+	};
+
+	@Override
+	public void onBackPressed() {
+		backPressed = true;
+		Intent i = new Intent(this, ContactsActivity.class);
+		i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+		startActivity(i);
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		context = getApplicationContext();
-		this.connection = Conexion.getInstance();
-		this.roster = RosterManager.getRosterInstance();
-		chatMan = ContactsActivity.chatMan;
-		chat = chatMan.chat;
 		super.onCreate(savedInstanceState);
+
 		setContentView(R.layout.chat);
-		destJid = getIntent().getStringExtra("destJid");
-		myJid = this.connection.getUser();
-		cipher = RosterManager.isSecure(destJid);
-		Bundle bundle = getIntent().getExtras();
-		passPhrase = bundle.getString(AndroidRsaConstants.PASSPHRASE);
-
-		Log.d(TAG, "Creado chat con " + roster.getEntry(StringUtils.parseBareAddress(destJid)).getName() + " cifrado="
-				+ cipher);
-
-		if (chat == null) {
-			chatMan.createChat(destJid, messageListener);
-			chat = chatMan.getChat();
-			if (cipher) {
-				Message m = new Message(destJid);
-				try {
-					chat.sendMessage(m);
-				} catch (XMPPException e) {
-					e.printStackTrace();
-				}
-			}
-		} else {
-			chat.addMessageListener(messageListener);
-		}
 
 		adapter = new ChatAdapter(this, listMessages);
 		setListAdapter(adapter);
 		myListView = getListView();
 		myListView.setDivider(null);
 
-		if (cipher) {
-			Bitmap bm = AvatarsCache.getAvatar(destJid);
-			try {
-				cert = Decode.decode(bm);
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (CertificateException e) {
-				e.printStackTrace();
+		myJid = Conexion.getInstance().getUser();
+		passPhrase = getIntent().getStringExtra(AndroidRsaConstants.PASSPHRASE);
+
+		setDestinationProperties(getIntent().getStringExtra(AndroidRsaConstants.DEST_JID));
+		initializeMessageListener();
+	}
+
+	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+
+		setDestinationProperties(intent.getStringExtra(AndroidRsaConstants.DEST_JID));
+		initializeMessageListener();
+	}
+
+	private void setDestinationProperties(String newDestJid) {
+		if (!newDestJid.equals(destJid)) {
+			destJid = newDestJid;
+			cipher = RosterManager.isSecure(destJid);
+			destCert = null;
+			if (cipher) {
+				Bitmap bm = AvatarsCache.getAvatar(destJid);
+				try {
+					destCert = Decode.decode(bm);
+				} catch (Exception e) {
+					Log.e(TAG, "Error decodificando el certificado del destinatario");
+					e.printStackTrace();
+				}
+			}
+
+			Log.i(TAG, "Creado chat con " + destJid + " cifrado=" + cipher);
+		}
+	}
+
+	private void initializeMessageListener() {
+		Chat destChat;
+		if (ChatMan.openedChats.containsKey(destJid)) {
+			destChat = ChatMan.openedChats.get(destJid);
+			if (destChat.getListeners().isEmpty()) {
+				destChat.addMessageListener(messageListener);
+			}
+		} else {
+			destChat = ChatMan.createChat(destJid, messageListener);
+			if (cipher) {
+				Message m = new Message(destJid);
+				try {
+					destChat.sendMessage(m);
+				} catch (XMPPException e) {
+					e.printStackTrace();
+				}
 			}
 
 		}
@@ -130,69 +189,26 @@ public class ChatActivity extends ListActivity {
 		listMessages.add(m);
 		refreshAdapter();
 		myListView.smoothScrollToPosition(adapter.getCount() - 1);
-
-		if (!cipher) {
+		if (cipher) {
 			try {
-				message.setBody(plainText);
-				chatMan.getChat().sendMessage(message);
-				Log.d(TAG, "Enviando: " + message.getBody());
-
-			} catch (XMPPException e) {
-				Log.d(TAG, "ERROR al enviar mensaje");
-			}
-		} else {
-			try {
-				String encodedMessage = RSA.cipher(plainText, cert.getPublicKey());
+				String encodedMessage = RSA.cipher(plainText, destCert.getPublicKey());
 				message.setBody(encodedMessage);
-				chatMan.getChat().sendMessage(message);
-				Log.d(TAG, "Enviando cifrado: " + message.getBody() + " " + plainText);
-
+				Log.i(TAG, "Enviando cifrado: " + message.getBody() + " " + plainText);
 			} catch (Exception e) {
-				Log.d(TAG, "PETO ENVIANDO CIFRADOOOO");
+				Log.e(TAG, "ERROR al cifrar");
 				e.printStackTrace();
 			}
+		} else {
+			message.setBody(plainText);
+			Log.i(TAG, "Enviando mensaje plano: " + message.getBody());
+		}
+		try {
+			ChatMan.openedChats.get(destJid).sendMessage(message);
+		} catch (XMPPException e) {
+			Log.e(TAG, "ERROR al enviar mensaje");
+			e.printStackTrace();
 		}
 	}
-
-	private MessageListener messageListener = new MessageListener() {
-		public void processMessage(Chat chat, Message message) {
-			if ((message.getBody() != null) && (!message.getType().equals(Message.Type.error))) {
-				if (!cipher) {
-
-					Log.i(TAG, "Recibido mensaje plano: " + message.getBody());
-					listMessages.add(message);
-					refreshAdapter();
-					myListView.smoothScrollToPosition(adapter.getCount() - 1);
-				} else {
-
-					try {
-						PrivateKey pk = RSA.getPrivateKeyDecryted(KeyStore.getInstance().getPk(), passPhrase);
-						String decodedMessage = RSA.decipher(message.getBody(), pk);
-						Log.i(TAG, "Recibido mensaje cifrado: " + decodedMessage);
-
-						Message m = new Message();
-						m.setFrom(message.getFrom());
-						m.setTo(message.getTo());
-
-						m.setBody(decodedMessage);
-						SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-						m.setSubject(sdf.format(new Date()));
-						listMessages.add(m);
-						refreshAdapter();
-						myListView.smoothScrollToPosition(adapter.getCount() - 1);
-
-					} catch (Exception e) {
-						Log.d(TAG, "PETO AL DESCIFRAR");
-						e.printStackTrace();
-
-					}
-
-				}
-			}
-
-		}
-
-	};
 
 	private void refreshAdapter() {
 		runOnUiThread(new Runnable() {
@@ -200,13 +216,6 @@ public class ChatActivity extends ListActivity {
 				adapter.notifyDataSetChanged();
 			}
 		});
-	}
-
-	@Override
-	public void onBackPressed() {
-		chatMan.chat = null;
-		chat = null;
-		super.onBackPressed();
 	}
 
 }

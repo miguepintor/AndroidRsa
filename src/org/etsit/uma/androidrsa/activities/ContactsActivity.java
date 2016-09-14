@@ -51,8 +51,7 @@ public class ContactsActivity extends ListActivity {
 	private boolean showAll = true;
 	private ContactsAdapter adapter;
 	private ListView myListView;
-	public static ChatMan chatMan;
-	public static String passPhrase;
+	public String passPhrase;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -87,12 +86,10 @@ public class ContactsActivity extends ListActivity {
 		Roster.setDefaultSubscriptionMode(Roster.SubscriptionMode.accept_all);
 		roster.setSubscriptionMode(Roster.SubscriptionMode.accept_all);
 
-		Bundle bundle = getIntent().getExtras();
-		passPhrase = bundle.getString(AndroidRsaConstants.PASSPHRASE);
+		passPhrase = getIntent().getStringExtra(AndroidRsaConstants.PASSPHRASE);
 
 		pintarUI();
-		chatMan = new ChatMan(this);
-		chatMan.initListener();
+		ChatMan.initListener(this);
 
 	}
 
@@ -142,8 +139,9 @@ public class ContactsActivity extends ListActivity {
 		myListView.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				if (position > 0) {
-					Intent i = new Intent(getApplicationContext(), ChatActivity.class);
-					i.putExtra("destJid", listaPresences.get(position - 1).getFrom());
+					Intent i = new Intent(ContactsActivity.this, ChatActivity.class);
+					i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+					i.putExtra(AndroidRsaConstants.DEST_JID, listaPresences.get(position - 1).getFrom());
 					i.putExtra(AndroidRsaConstants.PASSPHRASE, passPhrase);
 					startActivity(i);
 				}

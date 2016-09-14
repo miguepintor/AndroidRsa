@@ -42,6 +42,7 @@ public class AndroidRsaConstants {
     public static final String FILE_PATH = "file_path";
     public static final String STEGO_IMAGE_PATH = "stego_img_path";
     public static final String PASSPHRASE = "passphrase";
+    public static final String DEST_JID = "destJid";
 
     // Constants for preferences
 
