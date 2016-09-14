@@ -3,32 +3,16 @@ package org.etsit.uma.androidrsa.xmpp;
 
 import org.etsit.uma.androidrsa.utils.AndroidRsaConstants;
 import org.jivesoftware.smack.Roster;
-import org.jivesoftware.smack.RosterEntry;
 import org.jivesoftware.smack.util.StringUtils;
 
 public class RosterManager {
-	private static Roster roster = Conexion.getInstance().getRoster();
+	private static Roster roster;
 
 	public static Roster getRosterInstance() {
-		return Conexion.getInstance().getRoster();
-	}
-
-	public static RosterEntry findByName(String name) {
-		for (RosterEntry entry : roster.getEntries()) {
-			if ((entry.getName() != null) && (entry.getName().equals(name))) {
-				return entry;
-			}
+		if (roster == null) {
+			roster = Conexion.getInstance().getRoster();
 		}
-		return null;
-	}
-
-	public static RosterEntry findByJid(String jid) {
-		for (RosterEntry entry : roster.getEntries()) {
-			if ((entry.getName() != null) && (roster.getPresence(entry.getUser()).getFrom().equals(jid))) {
-				return entry;
-			}
-		}
-		return null;
+		return roster;
 	}
 
 	public static boolean isSecure(String jid) {

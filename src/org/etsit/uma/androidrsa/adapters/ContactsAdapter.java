@@ -23,7 +23,6 @@ import android.widget.TextView;
 public class ContactsAdapter extends ArrayAdapter<Presence> {
 	private Context context;
 	private ArrayList<Presence> list;
-	private String TAG = "ContactsAdapter";
 	private HashMap<String, Bitmap> avatarMap;
 
 	static class ViewHolder {

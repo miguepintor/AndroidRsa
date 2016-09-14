@@ -46,7 +46,6 @@ import android.widget.ListView;
 public class ContactsActivity extends ListActivity {
 	private static final String TAG = "ContactsActivity";
 	private Connection connection;
-	public static Roster roster;
 	private ArrayList<Presence> listaPresences = new ArrayList<Presence>();
 	private boolean showAll = true;
 	private ContactsAdapter adapter;
@@ -82,51 +81,46 @@ public class ContactsActivity extends ListActivity {
 			e.printStackTrace();
 		}
 
-		roster = RosterManager.getRosterInstance();
 		Roster.setDefaultSubscriptionMode(Roster.SubscriptionMode.accept_all);
-		roster.setSubscriptionMode(Roster.SubscriptionMode.accept_all);
+		RosterManager.getRosterInstance().setSubscriptionMode(Roster.SubscriptionMode.accept_all);
 
 		passPhrase = getIntent().getStringExtra(AndroidRsaConstants.PASSPHRASE);
 
-		pintarUI();
+		loadUI();
+		
 		ChatMan.initListener(this);
-
-	}
-
-	private void loadContacts() {
-		roster = RosterManager.getRosterInstance();
-		Collection<RosterEntry> entries = roster.getEntries();
-		listaPresences.clear();
-		for (RosterEntry entry : entries) {
-			if (showAll) {
-				Iterator<Presence> it = roster.getPresences(entry.getUser());
-				while (it.hasNext()) {
-					Presence p = it.next();
-					p.setProperty("name",
-							entry.getName() == null ? StringUtils.parseName(p.getFrom()) : entry.getName());
-					listaPresences.add(p);
-					Log.d(TAG, "AÑADIDO from:" + p.getFrom() + " name:" + p.getProperty("name"));
-				}
-			} else if (!showAll) {
-				Iterator<Presence> it = roster.getPresences(entry.getUser());
-				while (it.hasNext()) {
-					Presence p = it.next();
-					int status = Status.getStatusFromPresence(p);
-					if ((status == Status.CONTACT_STATUS_AVAILABLE)
-							|| (status == Status.CONTACT_STATUS_AVAILABLE_FOR_CHAT)
-							|| (status == Status.CONTACT_STATUS_AWAY) || (status == Status.CONTACT_STATUS_BUSY)) {
-						p.setProperty("name",
-								entry.getName() == null ? StringUtils.parseName(p.getFrom()) : entry.getName());
-						listaPresences.add(p);
-						Log.d(TAG, "AÑADIDO from:" + p.getFrom() + " name:" + p.getProperty("name"));
-					}
-				}
+		
+		RosterManager.getRosterInstance().addRosterListener(new RosterListener() {
+			public void entriesDeleted(Collection<String> addresses) {
+				Log.d(TAG, "EntriesDeleted: " + addresses.toString());
+				refreshAdapter();
 			}
-		}
-		Collections.sort(listaPresences, new PresenceComparator());
-	}
 
-	private void pintarUI() {
+			public void entriesUpdated(Collection<String> addresses) {
+				Log.d(TAG, "EntriesUpdated: " + addresses.toString());
+				refreshAdapter();
+			}
+
+			public void presenceChanged(Presence presence) {
+				Log.d(TAG, "Presence changed: " + presence.getFrom() + " " + presence.getMode());
+				removePresence(presence);
+				String name = StringUtils.parseName(presence.getFrom());
+				presence.setProperty("name", name);
+				listaPresences.add(presence);
+				Collections.sort(listaPresences, new PresenceComparator());
+
+				AvatarsCache.getInstance().put(presence.getFrom(), AvatarsCache.getAvatar(presence.getFrom()));
+				refreshAdapter();
+			}
+
+			public void entriesAdded(Collection<String> addresses) {
+				Log.d(TAG, "EntriesAdded: " + addresses.toString());
+				refreshAdapter();
+			}
+		});
+	}
+	
+	private void loadUI() {
 		loadContacts();
 		myListView = getListView();
 		View headerView = getLayoutInflater().inflate(R.layout.header_contacts, null);
@@ -148,44 +142,39 @@ public class ContactsActivity extends ListActivity {
 			}
 
 		});
-
-		roster.addRosterListener(new RosterListener() {
-			public void entriesDeleted(Collection<String> addresses) {
-				Log.d(TAG, "EntriesDeleted: " + addresses.toString());
-				// loadContacts();
-				refreshAdapter();
-			}
-
-			public void entriesUpdated(Collection<String> addresses) {
-				Log.d(TAG, "EntriesUpdated: " + addresses.toString());
-				// loadContacts();
-				refreshAdapter();
-			}
-
-			public void presenceChanged(Presence presence) {
-				Log.d(TAG, "Presence changed: " + presence.getFrom() + " " + presence.getMode());
-				// loadContacts();
-				removePresence(presence);
-
-				RosterEntry entry = roster.getEntry(StringUtils.parseBareAddress(presence.getFrom()));
-				String name = entry.getName() == null ? StringUtils.parseName(presence.getFrom()) : entry.getName();
-
-				presence.setProperty("name", name);
-				listaPresences.add(presence);
-				Collections.sort(listaPresences, new PresenceComparator());
-
-				AvatarsCache.getInstance().put(presence.getFrom(), AvatarsCache.getAvatar(presence.getFrom()));
-				refreshAdapter();
-			}
-
-			public void entriesAdded(Collection<String> addresses) {
-				Log.d(TAG, "EntriesAdded: " + addresses.toString());
-				// loadContacts();
-				refreshAdapter();
-			}
-		});
-
 	}
+
+	private void loadContacts() {
+		Collection<RosterEntry> entries = RosterManager.getRosterInstance().getEntries();
+		listaPresences.clear();
+		for (RosterEntry entry : entries) {
+			if (showAll) {
+				Iterator<Presence> it = RosterManager.getRosterInstance().getPresences(entry.getUser());
+				while (it.hasNext()) {
+					Presence p = it.next();
+					p.setProperty("name",StringUtils.parseName(p.getFrom()));
+					listaPresences.add(p);
+					Log.d(TAG, "AÑADIDO contacto from:" + p.getFrom() + " name:" + p.getProperty("name"));
+				}
+			} else if (!showAll) {
+				Iterator<Presence> it = RosterManager.getRosterInstance().getPresences(entry.getUser());
+				while (it.hasNext()) {
+					Presence p = it.next();
+					int status = Status.getStatusFromPresence(p);
+					if ((status == Status.CONTACT_STATUS_AVAILABLE)
+							|| (status == Status.CONTACT_STATUS_AVAILABLE_FOR_CHAT)
+							|| (status == Status.CONTACT_STATUS_AWAY) || (status == Status.CONTACT_STATUS_BUSY)) {
+						p.setProperty("name", StringUtils.parseName(p.getFrom()));
+						listaPresences.add(p);
+						Log.d(TAG, "AÑADIDO contacto from:" + p.getFrom() + " name:" + p.getProperty("name"));
+					}
+				}
+			}
+		}
+		Collections.sort(listaPresences, new PresenceComparator());
+	}
+
+	
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -243,13 +232,15 @@ public class ContactsActivity extends ListActivity {
 	@Override
 	public void onBackPressed() {
 		Conexion.disconnect();
-		super.onBackPressed();
+		Intent i = new Intent(this, LoginActivity.class);
+		i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		startActivity(i);
 	}
 
-	public void removePresence(Presence presence) {
+	private void removePresence(Presence presence) {
 		for (Iterator<Presence> it = listaPresences.iterator(); it.hasNext();) {
 			Presence p = it.next();
-			if (StringUtils.parseBareAddress(p.getFrom()).equals(StringUtils.parseBareAddress(presence.getFrom()))) {
+			if (p.getFrom().equals(presence.getFrom())) {
 				it.remove();
 			}
 		}
