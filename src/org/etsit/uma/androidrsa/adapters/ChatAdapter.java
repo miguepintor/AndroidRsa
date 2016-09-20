@@ -24,7 +24,6 @@ import android.widget.TextView;
 public class ChatAdapter extends ArrayAdapter<Message> {
     private Context context;
     private ArrayList<Message> list;
-    private String TAG = "ChatAdapter";
     private HashMap<String, Bitmap> avatarMap;
     private String myJid;
 

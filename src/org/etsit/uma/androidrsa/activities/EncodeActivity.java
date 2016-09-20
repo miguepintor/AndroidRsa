@@ -123,8 +123,7 @@ public class EncodeActivity extends Activity {
                                 }
                             });
 
-            AlertDialog alert = builder.create();
-            // alert.show();
+            builder.create();
         }
     };
 

@@ -62,8 +62,10 @@ public class RSA {
 
         BufferedReader in = new BufferedReader(new FileReader(privKeyFile));
         String line = in.readLine();
-        if (line.contains("-----BEGIN PRIVATE KEY-----") == false)
+        if (line.contains("-----BEGIN PRIVATE KEY-----") == false){
+        	in.close();
             throw new InvalidKeyException("Invalid file");
+        }
         line = line.substring(27);
 
         String base64 = new String();
@@ -129,8 +131,10 @@ public class RSA {
             CertificateException {
         BufferedReader in = new BufferedReader(new FileReader(path));
         String line = in.readLine();
-        if (line.contains("-----BEGIN CERTIFICATE-----") == false)
+        if (line.contains("-----BEGIN CERTIFICATE-----") == false){
+        	in.close();
             throw new IOException("Couldnt find");
+        }
         line = line.substring(27);
 
         String base64 = new String();

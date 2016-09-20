@@ -17,22 +17,16 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 
 public class DecodeActivity extends Activity implements Runnable {
-    private static final String TAG = "DecodeActivity";
-
-    // DEBUG
-    private static final int ACTIVITY_SELECT_IMAGE = 100;
 
     private String mStegoImagePath;
     private Context context;
     private Handler handler;
     private ProgressDialog dd;
-    private Uri photoUri;
     private final Runnable runnableDismmiss = new Runnable() {
 
         public void run() {
@@ -50,17 +44,12 @@ public class DecodeActivity extends Activity implements Runnable {
         mStegoImagePath =
                 bundle.getString(AndroidRsaConstants.STEGO_IMAGE_PATH);
 
-        // DEBUG
-        // mStegoImagePath = AndroidRsaConstants.EXTERNAL_SD_PATH
-        // + File.separator + "Koala_mobistego.png";
-
         handler = new Handler();
         dd = new ProgressDialog(this);
         dd.setIndeterminate(true);
         dd.setMessage(getResources().getString(R.string.decoding));
         dd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         dd.show();
-        photoUri = getIntent().getData();
         Thread tt = new Thread(this, "Decoding Mobistego");
         tt.start();
 
@@ -157,8 +146,6 @@ public class DecodeActivity extends Activity implements Runnable {
             File file = new File(AndroidRsaConstants.DECODED_CERT_PATH);
             BufferedWriter writer = new BufferedWriter(new FileWriter(file));
             writer.write(str);
-
-            // writer.flush();
             writer.close();
         } catch (IOException e) {
             // TODO Auto-generated catch block
