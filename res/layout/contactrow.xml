@@ -2,25 +2,24 @@
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/linearLayout1"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/a9p_09_11_00062" >
+        android:layout_height="wrap_content" 
+        >
 
-        <ImageView
+        <org.etsit.uma.androidrsa.views.RoundedImageView
             android:id="@+id/avatar"
-            android:layout_width="50dip"
-            android:layout_height="50dip"
-            android:layout_centerVertical="true"
+            android:layout_width="40dip"
+            android:layout_height="40dip"
             android:layout_gravity="center_vertical"
             android:layout_marginBottom="5dip"
             android:layout_marginLeft="5dip"
             android:layout_marginRight="5dip"
             android:layout_marginTop="5dip"
-            android:layout_weight="0.10"
-            android:src="@drawable/ic_launcher" />
+            
+            android:src="@drawable/ic_launcher"
+            android:background="@layout/circle"/>
 
 
         <TextView
-            xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/nombre"
             android:layout_width="5dip"
             android:layout_height="wrap_content"
@@ -32,8 +31,9 @@
             android:shadowDy="1.0"
             android:shadowRadius="1"
             android:text="Nombre"
-            android:textColor="@color/negro"
-            android:textSize="14dip" />
+            android:textColor="@color/background_floating_material_dark"
+            android:textSize="14dip" 
+            />
 
         <ImageView
             android:id="@+id/iconsec"

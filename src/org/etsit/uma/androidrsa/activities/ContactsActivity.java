@@ -122,6 +122,7 @@ public class ContactsActivity extends ListActivity {
 	
 	private void loadUI() {
 		loadContacts();
+		setContentView(R.layout.contacts);
 		myListView = getListView();
 		View headerView = getLayoutInflater().inflate(R.layout.header_contacts, null);
 		headerView.setClickable(false);

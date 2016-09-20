@@ -3,11 +3,11 @@
     android:id="@+id/Title_contacts"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/a9p_09_11_00304"
+    android:background="@color/background_floating_material_dark"
     android:gravity="center"
     android:shadowColor="#888"
     android:shadowDy="1.0"
     android:shadowRadius="1"
-    android:text="Contactos"
-    android:textColor="#FFFFFF"
-    android:textSize="35dip" />
+    android:text="@string/contacts"
+    android:textColor="@color/background_material_light"
+    android:textSize="35sp" />

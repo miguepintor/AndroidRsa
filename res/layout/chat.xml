@@ -2,15 +2,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical"
-    android:background="@drawable/a9p_09_11_00846">
+    android:background="@drawable/a9p_09_11_00846"
+    android:orientation="vertical" >
 
     <ListView
         android:id="@android:id/list"
         android:layout_width="match_parent"
         android:layout_height="357dp"
-        android:layout_weight="0.91" 
-        android:clickable="false">
+        android:layout_weight="0.91"
+        android:clickable="false" >
     </ListView>
 
     <LinearLayout
@@ -28,6 +28,7 @@
             android:layout_width="0dip"
             android:layout_height="45dp"
             android:layout_weight="1" >
+
             <requestFocus>
             </requestFocus>
         </EditText>
@@ -36,8 +37,12 @@
             android:id="@+id/btnSend"
             android:layout_width="125dp"
             android:layout_height="45dp"
-            android:text="Send" 
-            android:onClick="send">
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@color/background_material_light"
+            android:onClick="send"
+            android:text="@string/send"
+            android:textColor="@color/background_floating_material_dark" >
         </Button>
     </LinearLayout>
 
