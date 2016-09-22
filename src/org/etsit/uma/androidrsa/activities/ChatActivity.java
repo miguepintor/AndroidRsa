@@ -22,6 +22,7 @@ import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.MessageListener;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.util.StringUtils;
 
 import android.app.ListActivity;
 import android.content.Intent;
@@ -29,10 +30,9 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 
 public class ChatActivity extends ListActivity {
 	private static final String TAG = "ChatActivity";
@@ -60,13 +60,13 @@ public class ChatActivity extends ListActivity {
 					startActivity(i);
 				}
 				setDestinationProperties(chat.getParticipant());
-				
+
 				Message copyMessage = new Message();
 				copyMessage.setFrom(message.getFrom());
 				copyMessage.setTo(message.getTo());
 				SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
 				copyMessage.setSubject(sdf.format(new Date()));
-				
+
 				if (cipher) {
 					try {
 						PrivateKey pk = RSA.getPrivateKeyDecryted(KeyStore.getInstance().getPk(), passPhrase);
@@ -81,7 +81,7 @@ public class ChatActivity extends ListActivity {
 					copyMessage.setBody(message.getBody());
 					Log.i(TAG, "Recibido mensaje plano: " + message.getBody());
 				}
-				
+
 				listMessages.add(copyMessage);
 				refreshAdapter();
 				myListView.smoothScrollToPosition(adapter.getCount() - 1);
@@ -128,6 +128,8 @@ public class ChatActivity extends ListActivity {
 	private void setDestinationProperties(String newDestJid) {
 		if (!newDestJid.equals(destJid)) {
 			destJid = newDestJid;
+			TextView title = (TextView) findViewById(R.id.chat_title);
+			title.setText(StringUtils.parseName(destJid) + " " + getResources().getString(R.string.is_talking));
 			cipher = RosterManager.isSecure(destJid);
 			destCert = null;
 			if (cipher) {
@@ -163,13 +165,6 @@ public class ChatActivity extends ListActivity {
 			}
 
 		}
-	}
-
-	public void animate(View view) {
-		Animation animation = new AlphaAnimation(0.0f, 1.0f);
-		animation.setDuration(1000);
-		animation.setStartOffset(500);
-		view.startAnimation(animation);
 	}
 
 	public void send(View view) {
