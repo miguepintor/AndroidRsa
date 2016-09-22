@@ -19,8 +19,7 @@ public class Conexion {
 		super();
 	}
 
-	// patron singleton, unica conexion para toda la aplicacion
-	public static Connection getInstance(String service, String userid, String password) throws XMPPException {
+	public static Connection innit(String service, String userid, String password) throws XMPPException {
 		if (service.equals("Openfire")) {
 			SmackConfiguration.setPacketReplyTimeout(60000);
 			Log.d(TAG, "Creando una conexión con " + AndroidRsaConstants.OPENFIRE_HOST + ":"
@@ -67,18 +66,19 @@ public class Conexion {
 		} else {
 			con = null;
 		}
+		
+		RosterManager.innit();
 
 		return con;
-
 	}
 
 	public static Connection getInstance() {
-		if (con != null) {
-			Log.d(TAG, "La conexión ya existe,devolviendo!");
-			return con;
-		} else {
+		if (con == null) {
 			throw new RuntimeException("Error, no esta logueado.");
 		}
+
+		Log.d(TAG, "La conexión ya existe,devolviendo!");
+		return con;
 	}
 
 	public static void disconnect() {

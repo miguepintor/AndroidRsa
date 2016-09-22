@@ -1,8 +1,6 @@
 
 package org.etsit.uma.androidrsa.activities;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -12,7 +10,6 @@ import org.etsit.uma.androidrsa.R;
 import org.etsit.uma.androidrsa.adapters.ContactsAdapter;
 import org.etsit.uma.androidrsa.utils.AndroidRsaConstants;
 import org.etsit.uma.androidrsa.utils.PresenceComparator;
-import org.etsit.uma.androidrsa.utils.ReadFileAsByteArray;
 import org.etsit.uma.androidrsa.xmpp.AvatarsCache;
 import org.etsit.uma.androidrsa.xmpp.ChatMan;
 import org.etsit.uma.androidrsa.xmpp.Conexion;
@@ -22,17 +19,11 @@ import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.RosterEntry;
 import org.jivesoftware.smack.RosterListener;
-import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Presence;
-import org.jivesoftware.smack.provider.ProviderManager;
 import org.jivesoftware.smack.util.StringUtils;
-import org.jivesoftware.smackx.packet.VCard;
-import org.jivesoftware.smackx.provider.VCardProvider;
 
 import android.app.ListActivity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -57,39 +48,15 @@ public class ContactsActivity extends ListActivity {
 		super.onCreate(savedInstanceState);
 		connection = Conexion.getInstance();
 
-		VCard vCard = new VCard();
-		SharedPreferences prefs = getSharedPreferences(AndroidRsaConstants.SHARED_PREFERENCE_FILE,
-				Context.MODE_PRIVATE);
-		String avatarPath = prefs.getString(AndroidRsaConstants.ENCODED_IMAGE_PATH, "default");
-		ProviderManager.getInstance().addIQProvider("vCard", "vcard-temp", new VCardProvider());
-		try {
-			vCard.load(connection);
-
-			if (!avatarPath.equals("default")) {
-				byte[] bytes = ReadFileAsByteArray.getBytesFromFile(new File(avatarPath));
-				vCard.setAvatar(bytes);
-				Thread.sleep(10000);
-				vCard.save(connection);
-				Thread.sleep(1000);
-			}
-
-		} catch (XMPPException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-
 		Roster.setDefaultSubscriptionMode(Roster.SubscriptionMode.accept_all);
 		RosterManager.getRosterInstance().setSubscriptionMode(Roster.SubscriptionMode.accept_all);
 
 		passPhrase = getIntent().getStringExtra(AndroidRsaConstants.PASSPHRASE);
 
 		loadUI();
-		
+
 		ChatMan.initListener(this);
-		
+
 		RosterManager.getRosterInstance().addRosterListener(new RosterListener() {
 			public void entriesDeleted(Collection<String> addresses) {
 				Log.d(TAG, "EntriesDeleted: " + addresses.toString());
@@ -119,7 +86,7 @@ public class ContactsActivity extends ListActivity {
 			}
 		});
 	}
-	
+
 	private void loadUI() {
 		loadContacts();
 		setContentView(R.layout.contacts);
@@ -153,7 +120,7 @@ public class ContactsActivity extends ListActivity {
 				Iterator<Presence> it = RosterManager.getRosterInstance().getPresences(entry.getUser());
 				while (it.hasNext()) {
 					Presence p = it.next();
-					p.setProperty("name",StringUtils.parseName(p.getFrom()));
+					p.setProperty("name", StringUtils.parseName(p.getFrom()));
 					listaPresences.add(p);
 					Log.d(TAG, "AÑADIDO contacto from:" + p.getFrom() + " name:" + p.getProperty("name"));
 				}
@@ -174,8 +141,6 @@ public class ContactsActivity extends ListActivity {
 		}
 		Collections.sort(listaPresences, new PresenceComparator());
 	}
-
-	
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

@@ -122,7 +122,7 @@ public class LoginTask extends AsyncTask<Object, Void, Boolean> {
 	@Override
 	protected Boolean doInBackground(Object... params) {
 		try {
-			con = Conexion.getInstance(service, user, password);
+			con = Conexion.innit(service, user, password);
 			return true;
 		} catch (XMPPException e) {
 			e.printStackTrace();
