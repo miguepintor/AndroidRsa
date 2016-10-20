@@ -198,6 +198,8 @@ public class ContactsActivity extends ListActivity {
 	@Override
 	public void onBackPressed() {
 		Conexion.disconnect();
+		ChatMan.openedChats.clear();
+		
 		Intent i = new Intent(this, LoginActivity.class);
 		i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		startActivity(i);
