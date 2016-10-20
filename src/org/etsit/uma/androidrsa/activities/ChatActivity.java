@@ -128,8 +128,13 @@ public class ChatActivity extends ListActivity {
 	private void setDestinationProperties(String newDestJid) {
 		if (!newDestJid.equals(destJid)) {
 			destJid = newDestJid;
-			TextView title = (TextView) findViewById(R.id.chat_title);
-			title.setText(StringUtils.parseName(destJid) + " " + getResources().getString(R.string.is_talking));
+			final TextView title = (TextView) findViewById(R.id.chat_title);
+			this.runOnUiThread(new Runnable() {
+				public void run() {
+					title.setText(StringUtils.parseName(destJid) + " " + getResources().getString(R.string.is_talking));
+
+				}
+			});
 			cipher = RosterManager.isSecure(destJid);
 			destCert = null;
 			if (cipher) {
@@ -168,6 +173,7 @@ public class ChatActivity extends ListActivity {
 	}
 
 	public void send(View view) {
+
 		Message message = new Message(destJid);
 		EditText editText = (EditText) findViewById(R.id.textInput);
 		String plainText = editText.getText().toString();
@@ -197,6 +203,7 @@ public class ChatActivity extends ListActivity {
 			message.setBody(plainText);
 			Log.i(TAG, "Enviando mensaje plano: " + message.getBody());
 		}
+
 		try {
 			ChatMan.openedChats.get(destJid).sendMessage(message);
 		} catch (XMPPException e) {
