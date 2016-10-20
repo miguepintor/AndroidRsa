@@ -40,7 +40,6 @@ public class LoginActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.login);
-		prefs = getSharedPreferences(AndroidRsaConstants.SHARED_PREFERENCE_FILE, Context.MODE_PRIVATE);
 		loadPreferences();
 		Spinner spinner = (Spinner) findViewById(R.id.spinner);
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.services_array,
@@ -56,9 +55,6 @@ public class LoginActivity extends Activity {
 			}
 		});
 
-		SharedPreferences prefs = getSharedPreferences(AndroidRsaConstants.SHARED_PREFERENCE_FILE,
-				Context.MODE_PRIVATE);
-
 		if (prefs.getBoolean(AndroidRsaConstants.REGISTERED, false)) {
 			try {
 				File file = new File(prefs.getString(AndroidRsaConstants.KEY_PATH, ""));
@@ -67,7 +63,6 @@ public class LoginActivity extends Activity {
 				KeyStore.getInstance().setCertificate(AndroidRsaConstants.OWN_ALIAS,
 						RSA.getCertificate(prefs.getString(AndroidRsaConstants.CERT_PATH, "")));
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -76,6 +71,7 @@ public class LoginActivity extends Activity {
 
 	// Carga los campos de la última ejecución
 	private void loadPreferences() {
+		prefs = getSharedPreferences(AndroidRsaConstants.SHARED_PREFERENCE_FILE, Context.MODE_PRIVATE);
 		if (!prefs.getString(AndroidRsaConstants.USERID, "default").equals("default")) {
 			EditText e = (EditText) findViewById(R.id.userid);
 			e.setText(prefs.getString(AndroidRsaConstants.USERID, "default"));
@@ -112,34 +108,5 @@ public class LoginActivity extends Activity {
 		}
 
 	}
-
-	// /** llamado cuando se pulsa el boton menu. */
-	// @Override
-	// public boolean onCreateOptionsMenu(Menu menu) {
-	// MenuInflater inflater = getMenuInflater();
-	// inflater.inflate(R.menu.menu_login, menu);
-	// return true;
-	// }
-	//
-	// /** llamado cuando un elemento del menu es seleccionado. */
-	// @Override
-	// public boolean onOptionsItemSelected(MenuItem item) {
-	// Intent i;
-	// switch (item.getItemId()) {
-	// case R.id.button_register:
-	// i = new Intent(this, RegisterActivity.class);
-	// startActivity(i);
-	// break;
-	// // TODO cambiar contrase�a
-	// // case R.id.button_change_password:
-	// // i = new Intent(this, ChangePassword.class);
-	// // startActivity(i);
-	// // break;
-	//
-	// }
-	// return true;
-	// }
-
-	// Dialogs
 
 }

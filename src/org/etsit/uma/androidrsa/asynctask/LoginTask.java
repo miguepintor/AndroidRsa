@@ -77,8 +77,6 @@ public class LoginTask extends AsyncTask<Object, Void, Boolean> {
 										});
 						AlertDialog alert = builder.create();
 						alert.show();
-					} else {
-
 					}
 				} catch (Exception e) {
 					AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
@@ -126,7 +124,7 @@ public class LoginTask extends AsyncTask<Object, Void, Boolean> {
 			return true;
 		} catch (XMPPException e) {
 			e.printStackTrace();
-			Log.d(TAG, "Excepcion XMPP");
+			Log.e(TAG, "Excepcion XMPP");
 			con = null;
 			return false;
 		}

@@ -299,8 +299,6 @@ public class RegisterActivity extends Activity {
                             RSA.getCertificate(mChosenFilePath));
                     // Getting the passphrase to encrypt the private Key
 
-                    Log.d("SEGUIMIENTO", "PASSPHRASE " + passphrase);
-
                     // storing the private key
                     KeyStore.getInstance().setPk(
                             RSA.getPrivateKeyEncrytedBytes(mKey, passphrase));
@@ -309,11 +307,7 @@ public class RegisterActivity extends Activity {
 
                     KeyStore.getInstance().getCertificate(AndroidRsaConstants.OWN_ALIAS)
                             .verify(KeyStore.getInstance().getPb());
-                    // DEBUG
-                    Log.d("SEGUIMIENTO",
-                            "private key (REGISTER) "
-                                    + RSA.getPrivateKeyDecryted(KeyStore.getInstance().getPk(),
-                                            passphrase).toString());
+                    
                     // user have been registered
                     SharedPreferences prefs = getSharedPreferences(
                             AndroidRsaConstants.SHARED_PREFERENCE_FILE,
@@ -331,35 +325,16 @@ public class RegisterActivity extends Activity {
                     i.putExtra(AndroidRsaConstants.PASSPHRASE, passphrase);
                     startActivity(i);
 
-                } catch (NoSuchAlgorithmException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
                 } catch (CertificateException e) {
                     showDialog(DIALOG_INVALID_CERTIFICATE);
                     e.printStackTrace();
                 } catch (InvalidKeyException e) {
                     showDialog(DIALOG_INVALID_KEY);
                     e.printStackTrace();
-                } catch (NoSuchProviderException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
                 } catch (SignatureException e) {
                     showDialog(DIALOG_INVALID_SIGN_CERTIFICATE);
                     e.printStackTrace();
-                } catch (InvalidKeySpecException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch (NoSuchPaddingException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch (ShortBufferException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch (IllegalBlockSizeException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch (BadPaddingException e) {
-                    // TODO Auto-generated catch block
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
 
