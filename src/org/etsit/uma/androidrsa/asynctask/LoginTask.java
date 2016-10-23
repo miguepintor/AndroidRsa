@@ -52,9 +52,8 @@ public class LoginTask extends AsyncTask<Object, Void, Boolean> {
 
 			SharedPreferences prefs = ctx.getSharedPreferences(AndroidRsaConstants.SHARED_PREFERENCE_FILE,
 					Context.MODE_PRIVATE);
-			boolean registered = prefs.getBoolean(AndroidRsaConstants.REGISTERED, false);
 
-			if (registered) {
+			if (prefs.getBoolean(AndroidRsaConstants.REGISTERED, false)) {
 				try {
 					if (RSA.verifyOwnPk(password)) {
 						AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
@@ -80,22 +79,17 @@ public class LoginTask extends AsyncTask<Object, Void, Boolean> {
 					}
 				} catch (Exception e) {
 					AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
-					builder.setMessage(
-							"Invalid passprhase (you has changed your pass or you has registered another service). Register Again, please.")
-							.setCancelable(false).setPositiveButton(ctx.getResources().getString(R.string.ok),
-									new DialogInterface.OnClickListener() {
-										public void onClick(DialogInterface dialog, int id) {
-											Intent i = new Intent(ctx.getApplicationContext(), RegisterActivity.class);
-											i.putExtra(AndroidRsaConstants.PASSPHRASE, password);
-											ctx.startActivity(i);
-											dialog.dismiss();
-										}
-									});
+					builder.setMessage(R.string.invalid_passphrase).setCancelable(false).setPositiveButton(
+							ctx.getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog, int id) {
+									Intent i = new Intent(ctx.getApplicationContext(), RegisterActivity.class);
+									i.putExtra(AndroidRsaConstants.PASSPHRASE, password);
+									ctx.startActivity(i);
+									dialog.dismiss();
+								}
+							});
 					AlertDialog alert = builder.create();
 					alert.show();
-					Intent i = new Intent(activity, RegisterActivity.class);
-					i.putExtra(AndroidRsaConstants.PASSPHRASE, password);
-					activity.startActivity(i);
 				}
 
 			} else {

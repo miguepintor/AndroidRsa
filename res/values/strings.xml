@@ -24,7 +24,9 @@
     <string name="default_port">5222</string>
     <string name="default_service">gmail.com</string>
     <string name="default_userid">xxxxxx</string>
-    <string name="first_time_configuration">This is the first time that you run the application. Please choose an avatar and the certificate for the communication (the private key must be in the same folder starting with &quot;key_[name of the cert]&quot; E.G. key_C1.pem).</string>
+    <string name="first_time_configuration">This is the first time that you run the application. Please, enter the encryptation password that was sent to your email.</string>
+    <string name="other_time_configuration">Please choose an avatar and the certificate for the communication (the private key must be in the same folder ending with &quot;[name of the certificate]key&quot; E.G. certificatekey.pem).</string>
+    <string name="invalid_passphrase">Invalid passprhase (you has changed your pass or you has registered another service). Register Again, please.</string>
     <string name="ok">OK</string>
     <string name="not_found">Files not found</string>
     <string name="choose_file">Choose your file</string>
@@ -49,6 +51,7 @@
     <string name="info_empty_fields">There are empty fields. Please, fill them.</string>
     <string name="invalid_certificate">Invalid certificate file</string>
     <string name="invalid_key">Invalid Key file</string>
+    <string name="invalid_encryption_password">Invalid encryption password</string>
     <string-array name="services_array">
         <item>Openfire</item>
         <item>Gmail</item>

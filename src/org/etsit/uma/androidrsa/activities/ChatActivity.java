@@ -12,7 +12,7 @@ import org.etsit.uma.androidrsa.R;
 import org.etsit.uma.androidrsa.adapters.ChatAdapter;
 import org.etsit.uma.androidrsa.rsa.KeyStore;
 import org.etsit.uma.androidrsa.rsa.RSA;
-import org.etsit.uma.androidrsa.steganography.Decode;
+import org.etsit.uma.androidrsa.steganography.Decoder;
 import org.etsit.uma.androidrsa.utils.AndroidRsaConstants;
 import org.etsit.uma.androidrsa.xmpp.AvatarsCache;
 import org.etsit.uma.androidrsa.xmpp.ChatMan;
@@ -36,17 +36,17 @@ import android.widget.TextView;
 
 public class ChatActivity extends ListActivity {
 	private static final String TAG = "ChatActivity";
+	
 	private ArrayList<Message> listMessages = new ArrayList<Message>();
 	private ChatAdapter adapter;
 	private ListView myListView;
-
+	private final Decoder decoder = new Decoder();
 	private String myJid;
 	private String passPhrase;
-
 	private Certificate destCert;
 	private String destJid;
+	
 	private boolean cipher;
-
 	private boolean backPressed = false;
 
 	private MessageListener messageListener = new MessageListener() {
@@ -140,7 +140,7 @@ public class ChatActivity extends ListActivity {
 			if (cipher) {
 				Bitmap bm = AvatarsCache.getAvatar(destJid);
 				try {
-					destCert = Decode.decode(bm);
+					destCert = decoder.decode(bm);
 				} catch (Exception e) {
 					Log.e(TAG, "Error decodificando el certificado del destinatario");
 					e.printStackTrace();

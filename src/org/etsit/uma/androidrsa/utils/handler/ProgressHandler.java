@@ -1,5 +1,5 @@
 
-package org.etsit.uma.androidrsa.steganography;
+package org.etsit.uma.androidrsa.utils.handler;
 
 public interface ProgressHandler {
 

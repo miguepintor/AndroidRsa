@@ -2,20 +2,16 @@
 package org.etsit.uma.androidrsa.activities;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.security.SignatureException;
-import java.security.spec.InvalidKeySpecException;
+import java.util.Collection;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.ShortBufferException;
 import javax.security.cert.CertificateException;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.DirectoryFileFilter;
+import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.etsit.uma.androidrsa.R;
 import org.etsit.uma.androidrsa.rsa.KeyStore;
 import org.etsit.uma.androidrsa.rsa.RSA;
@@ -39,312 +35,324 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
 public class RegisterActivity extends Activity {
 
-    private static final String TAG = "RegisterActivity";
-    private static final int ACTIVITY_SELECT_IMAGE = 100;
+	private static final String TAG = "RegisterActivity";
+	private static final int ACTIVITY_SELECT_IMAGE = 100;
 
-    private String[] mFileList;
-    private File mChosenFile;
-    private String mChosenFileString;
-    private Bitmap mChosenImage;
-    private String mChosenImagePath;
-    private String passphrase;
+	private File[] mFilesList;
+	private File mChosenFile;
 
-    private static final int DIALOG_LOAD_FILE = 1000;
+	private Bitmap mChosenImage;
+	private String mChosenImagePath;
 
-    private static final int DIALOG_NOT_CHOSEN = 1002;
-    private static final int DIALOG_KEY_NOT_FOUND = 1003;
-    private static final int DIALOG_INVALID_CERTIFICATE = 1004;
-    private static final int DIALOG_INVALID_KEY = 1005;
-    private static final int DIALOG_INVALID_SIGN_CERTIFICATE = 1006;
-    private static final int DIALOG_IMAGE_TOO_LARGE = 1007;
-    private static final int DIALOG_IMAGE_SIZE_FAIL = 1008;
-    private static final int DIALOG_RUN_ONCE = 1009;
+	private String passphrase;
 
-    /** Called when the activity is first created. */
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // Remove title bar
-        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.register);
-        SharedPreferences prefs = getSharedPreferences(
-                AndroidRsaConstants.SHARED_PREFERENCE_FILE,
-                Context.MODE_PRIVATE);
-        boolean registered = prefs.getBoolean(AndroidRsaConstants.REGISTERED, false);
+	private static final int DIALOG_LOAD_FILE = 1000;
 
-        // Obtaning intent information
-        Bundle bundle = getIntent().getExtras();
-        passphrase = bundle.getString(AndroidRsaConstants.PASSPHRASE);
+	private static final int DIALOG_NOT_CHOSEN = 1002;
+	private static final int DIALOG_KEY_NOT_FOUND = 1003;
+	private static final int DIALOG_INVALID_CERTIFICATE = 1004;
+	private static final int DIALOG_INVALID_KEY = 1005;
+	private static final int DIALOG_INVALID_SIGN_CERTIFICATE = 1006;
+	private static final int DIALOG_IMAGE_TOO_LARGE = 1007;
+	private static final int DIALOG_IMAGE_SIZE_FAIL = 1008;
+	private static final int DIALOG_RUN_ONCE = 1009;
+	private static final int DIALOG_RUN_OTHER = 1010;
 
-        if (!registered)
-            showDialog(DIALOG_RUN_ONCE);
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 
-    }
+		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		setContentView(R.layout.register);
+		SharedPreferences prefs = getSharedPreferences(AndroidRsaConstants.SHARED_PREFERENCE_FILE,
+				Context.MODE_PRIVATE);
+		boolean registered = prefs.getBoolean(AndroidRsaConstants.REGISTERED, false);
 
-    public void onClickPickImage(View view) throws IOException {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("image/*");
-        startActivityForResult(intent, ACTIVITY_SELECT_IMAGE);
+		Bundle bundle = getIntent().getExtras();
+		passphrase = bundle.getString(AndroidRsaConstants.PASSPHRASE);
 
-    }
+		if (registered) {
+			showDialog(DIALOG_RUN_OTHER);
+		} else {
+			showDialog(DIALOG_RUN_ONCE);
+		}
+	}
 
-    // Find *.crt in the sd
-    private void loadFileList() {
-        File mPath = AndroidRsaConstants.EXTERNAL_SD_PATH;
-        if (mPath.exists()) {
-            FilenameFilter filter = new FilenameFilter() {
-                public boolean accept(File dir, String filename) {
-                    return filename.contains(AndroidRsaConstants.FTYPE);
-                }
-            };
-            mFileList = mPath.list(filter);
-        }
-        else {
-            mFileList = new String[0];
-        }
-    }
+	private void moveRawResourcesToAndroidRsaFolder() {
+		try {
+			FileUtils.copyInputStreamToFile(getResources().openRawResource(R.raw.certificate),
+					new File(AndroidRsaConstants.OWN_CERT_PATH));
+			FileUtils.copyInputStreamToFile(getResources().openRawResource(R.raw.certificatekey),
+					new File(AndroidRsaConstants.OWN_KEY_PATH));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-    // Dialogs
-    protected Dialog onCreateDialog(int id) {
-        Dialog dialog = null;
-        AlertDialog.Builder builder = new Builder(this);
+	}
 
-        switch (id) {
-            case DIALOG_RUN_ONCE:
-                builder.setMessage(R.string.first_time_configuration)
-                        .setCancelable(false)
-                        .setPositiveButton(getResources().getString(R.string.ok),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.dismiss();
-                                    }
-                                });
-                break;
-            case DIALOG_LOAD_FILE:
-                if (mFileList == null) {
-                    builder.setMessage(R.string.not_found)
-                            .setCancelable(false)
-                            .setPositiveButton(getResources().getString(R.string.ok),
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int id) {
-                                            dialog.dismiss();
-                                        }
-                                    });
-                } else {
-                    builder.setTitle(R.string.choose_file);
-                    builder.setSingleChoiceItems(mFileList, -1,
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    mChosenFileString = mFileList[which];
-                                }
-                            }).setPositiveButton(getResources().getString(R.string.ok),
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    mChosenFile = new File(AndroidRsaConstants.EXTERNAL_SD_PATH
-                                            + File.separator + mChosenFileString);
+	public void onClickPickImage(View view) throws IOException {
+		Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+		intent.setType("image/*");
+		startActivityForResult(intent, ACTIVITY_SELECT_IMAGE);
 
-                                    dialog.dismiss();
-                                }
-                            });
-                }
-                break;
-            case DIALOG_NOT_CHOSEN:
-                builder.setMessage(R.string.not_chosen)
-                        .setCancelable(false)
-                        .setPositiveButton(getResources().getString(R.string.ok),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.dismiss();
-                                    }
-                                });
-                break;
-            case DIALOG_KEY_NOT_FOUND:
-                builder.setMessage(R.string.key_not_found)
-                        .setCancelable(false)
-                        .setPositiveButton(getResources().getString(R.string.ok),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.dismiss();
-                                    }
-                                });
-                break;
+	}
 
-            case DIALOG_INVALID_CERTIFICATE:
-                builder.setMessage(R.string.invalid_certificate)
-                        .setCancelable(false)
-                        .setPositiveButton(getResources().getString(R.string.ok),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.dismiss();
-                                    }
-                                });
-                break;
-            case DIALOG_INVALID_KEY:
-                builder.setMessage(R.string.invalid_key)
-                        .setCancelable(false)
-                        .setPositiveButton(getResources().getString(R.string.ok),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.dismiss();
-                                    }
-                                });
-                break;
-            case DIALOG_INVALID_SIGN_CERTIFICATE:
-                builder.setMessage(R.string.invalid_sign_certificate)
-                        .setCancelable(false)
-                        .setPositiveButton(getResources().getString(R.string.ok),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.dismiss();
-                                    }
-                                });
-                break;
-            case DIALOG_IMAGE_TOO_LARGE:
-                builder.setMessage(R.string.image_too_large)
-                        .setCancelable(false)
-                        .setPositiveButton(getResources().getString(R.string.ok),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.dismiss();
-                                    }
-                                });
-                break;
-            case DIALOG_IMAGE_SIZE_FAIL:
-                builder.setMessage(R.string.image_size_fail)
-                        .setCancelable(false)
-                        .setPositiveButton(getResources().getString(R.string.ok),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.dismiss();
-                                    }
-                                });
-                break;
-        }
-        dialog = builder.show();
-        return dialog;
-    }
+	public void onClickButtonPickCertificate(View view) throws IOException {
+		loadFileList();
+		showDialog(DIALOG_LOAD_FILE);
+	}
 
-    public void onClickButtonPickCertificate(View view) throws IOException {
-        loadFileList();
-        showDialog(DIALOG_LOAD_FILE);
-    }
+	// Find *.crt in the sd
+	private void loadFileList() {
+		File extPath = AndroidRsaConstants.EXTERNAL_STORAGE_PATH;
+		if (extPath.exists()) {
+			Collection<File> fileList = FileUtils.listFiles(extPath,
+					new RegexFileFilter("^(.*\\" + AndroidRsaConstants.CERT_EXTENSION + ")"),
+					DirectoryFileFilter.DIRECTORY);
+			mFilesList = (File[]) fileList.toArray();
+		}
+	}
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
-        super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
+	// Dialogs
+	protected Dialog onCreateDialog(int id) {
+		Dialog dialog = null;
+		AlertDialog.Builder builder = new Builder(this);
 
-        switch (requestCode) {
-            case ACTIVITY_SELECT_IMAGE:
-                if (resultCode == RESULT_OK) {
-                    Uri selectedImage = imageReturnedIntent.getData();
-                    String[] filePathColumn = {
-                            MediaStore.Images.Media.DATA
-                    };
+		switch (id) {
+		case DIALOG_RUN_ONCE:
+			final EditText input = new EditText(this);
+			LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+					LinearLayout.LayoutParams.MATCH_PARENT);
+			input.setLayoutParams(lp);
+			builder.setView(input);
+			builder.setMessage(R.string.first_time_configuration).setCancelable(false)
+					.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							String password = input.getText().toString();
+							if(password == null || password ==""){
+								Toast.makeText(RegisterActivity.this, getResources().getString(R.string.info_empty_fields), Toast.LENGTH_LONG).show();
+							} else {
+								moveRawResourcesToAndroidRsaFolder();
+								try {
+									RSA.decryptEncryptPrivateKeyAndSave(AndroidRsaConstants.OWN_KEY_PATH, password, passphrase);
+									dialog.dismiss();
+								} catch (Exception e) {
+									e.printStackTrace();
+									Toast.makeText(RegisterActivity.this, getResources().getString(R.string.invalid_encryption_password), Toast.LENGTH_LONG).show();
+								}
+								
+							}
+						}
+					});
+			break;
+		case DIALOG_RUN_OTHER:
+			builder.setMessage(R.string.other_time_configuration).setCancelable(false)
+					.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							dialog.dismiss();
+						}
+					});
+			break;
+		case DIALOG_LOAD_FILE:
+			if (mFilesList == null) {
+				builder.setMessage(R.string.not_found).setCancelable(false).setPositiveButton(
+						getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int id) {
+								dialog.dismiss();
+							}
+						});
+			} else {
+				builder.setTitle(R.string.choose_file);
 
-                    Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null,
-                            null, null);
-                    cursor.moveToFirst();
+				builder.setSingleChoiceItems(extractFileNamesFromFilesList(), -1,
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int which) {
+								mChosenFile = mFilesList[which];
+							}
+						}).setPositiveButton(getResources().getString(R.string.ok),
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog, int id) {
+										dialog.dismiss();
+									}
+								});
+			}
+			break;
+		case DIALOG_NOT_CHOSEN:
+			builder.setMessage(R.string.not_chosen).setCancelable(false)
+					.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							dialog.dismiss();
+						}
+					});
+			break;
+		case DIALOG_KEY_NOT_FOUND:
+			builder.setMessage(R.string.key_not_found).setCancelable(false)
+					.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							dialog.dismiss();
+						}
+					});
+			break;
 
-                    int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                    // file path of selected image
-                    mChosenImagePath = cursor.getString(columnIndex);
-                    cursor.close();
-                    // Convert file path into bitmap image using below line.
-                    mChosenImage = BitmapFactory.decodeFile(mChosenImagePath);
+		case DIALOG_INVALID_CERTIFICATE:
+			builder.setMessage(R.string.invalid_certificate).setCancelable(false)
+					.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							dialog.dismiss();
+						}
+					});
+			break;
+		case DIALOG_INVALID_KEY:
+			builder.setMessage(R.string.invalid_key).setCancelable(false)
+					.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							dialog.dismiss();
+						}
+					});
+			break;
+		case DIALOG_INVALID_SIGN_CERTIFICATE:
+			builder.setMessage(R.string.invalid_sign_certificate).setCancelable(false)
+					.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							dialog.dismiss();
+						}
+					});
+			break;
+		case DIALOG_IMAGE_TOO_LARGE:
+			builder.setMessage(R.string.image_too_large).setCancelable(false)
+					.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							dialog.dismiss();
+						}
+					});
+			break;
+		case DIALOG_IMAGE_SIZE_FAIL:
+			builder.setMessage(R.string.image_size_fail).setCancelable(false)
+					.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							dialog.dismiss();
+						}
+					});
+			break;
+		}
+		dialog = builder.show();
+		return dialog;
+	}
 
-                    // put bitmapimage in imageview
-                    ImageView img = (ImageView) findViewById(R.id.image);
-                    img.setImageBitmap(mChosenImage);
+	private String[] extractFileNamesFromFilesList() {
+		String[] extractedFileNames = new String[mFilesList.length];
+		for (int i = 0; i < mFilesList.length; i++) {
+			extractedFileNames[i] = mFilesList[i].getName();
+		}
+		return extractedFileNames;
+	}
 
-                    File file = new File(mChosenImagePath);
-                    Log.d(TAG, String.valueOf(file.length()));
-                    if (file.length() > 500000) {
-                        showDialog(DIALOG_IMAGE_TOO_LARGE);
-                    }
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
+		super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
 
-                    if (mChosenImage.getHeight() != mChosenImage.getHeight()) {
-                        showDialog(DIALOG_IMAGE_SIZE_FAIL);
-                    }
+		switch (requestCode) {
+		case ACTIVITY_SELECT_IMAGE:
+			if (resultCode == RESULT_OK) {
+				Uri selectedImage = imageReturnedIntent.getData();
+				String[] filePathColumn = { MediaStore.Images.Media.DATA };
 
-                }
-        }
-    }
+				Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+				cursor.moveToFirst();
 
-    public void onClickButtonDone(View view) throws IOException {
+				int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+				// file path of selected image
+				mChosenImagePath = cursor.getString(columnIndex);
+				cursor.close();
+				// Convert file path into bitmap image using below line.
+				mChosenImage = BitmapFactory.decodeFile(mChosenImagePath);
 
-        if (mChosenFile != null && mChosenImage != null) {
-            String mChosenFileStringWithoutExt = mChosenFileString.substring(0,
-                    mChosenFileString.indexOf("."));
-            String mKeyPath = AndroidRsaConstants.EXTERNAL_SD_PATH
-                    + File.separator + AndroidRsaConstants.KEY_NAME + mChosenFileStringWithoutExt
-                    + ".pem";
-            File mKey = new File(mKeyPath);
-            Log.d(TAG, mKeyPath);
+				// put bitmapimage in imageview
+				ImageView img = (ImageView) findViewById(R.id.image);
+				img.setImageBitmap(mChosenImage);
 
-            if (mKey.exists()) {
+				File file = new File(mChosenImagePath);
+				Log.d(TAG, String.valueOf(file.length()));
+				if (file.length() > 500000) {
+					showDialog(DIALOG_IMAGE_TOO_LARGE);
+				}
 
-                String mChosenFilePath = AndroidRsaConstants.EXTERNAL_SD_PATH
-                        + File.separator + mChosenFileString;
+				if (mChosenImage.getHeight() != mChosenImage.getHeight()) {
+					showDialog(DIALOG_IMAGE_SIZE_FAIL);
+				}
 
-                // Stores my own certificate, my own private key and the public
-                // key of the CA
+			}
+		}
+	}
 
-                try {
+	public void onClickButtonDone(View view) throws IOException {
 
-                    KeyStore.getInstance().setCertificate(AndroidRsaConstants.OWN_ALIAS,
-                            RSA.getCertificate(mChosenFilePath));
-                    // Getting the passphrase to encrypt the private Key
+		if (mChosenFile != null && mChosenImage != null) {
+			String mChosenFilePath = mChosenFile.toString();
+			String mKeyPath = mChosenFilePath.substring(0, mChosenFilePath.indexOf(".")) + AndroidRsaConstants.KEY_NAME;
 
-                    // storing the private key
-                    KeyStore.getInstance().setPk(
-                            RSA.getPrivateKeyEncrytedBytes(mKey, passphrase));
+			File mKey = new File(mKeyPath);
+			Log.d(TAG, mKeyPath);
 
-                    KeyStore.getInstance().setPb(RSA.getCAPublicKey(getApplicationContext()));
+			if (mKey.exists()) {
 
-                    KeyStore.getInstance().getCertificate(AndroidRsaConstants.OWN_ALIAS)
-                            .verify(KeyStore.getInstance().getPb());
-                    
-                    // user have been registered
-                    SharedPreferences prefs = getSharedPreferences(
-                            AndroidRsaConstants.SHARED_PREFERENCE_FILE,
-                            Context.MODE_PRIVATE);
-                    Editor prefsEditor = prefs.edit();
-                    prefsEditor.putString(AndroidRsaConstants.KEY_PATH,
-                            mKeyPath);
-                    prefsEditor.putString(AndroidRsaConstants.CERT_PATH, mChosenFilePath);
-                    prefsEditor.apply();
+				// Stores my own certificate, my own private key and the public
+				// key of the CA
 
-                    // Applying steganography
-                    Intent i = new Intent(getApplicationContext(), EncodeActivity.class);
-                    i.putExtra(AndroidRsaConstants.FILE_PATH, mChosenFilePath);
-                    i.putExtra(AndroidRsaConstants.IMAGE_PATH, mChosenImagePath);
-                    i.putExtra(AndroidRsaConstants.PASSPHRASE, passphrase);
-                    startActivity(i);
+				try {
 
-                } catch (CertificateException e) {
-                    showDialog(DIALOG_INVALID_CERTIFICATE);
-                    e.printStackTrace();
-                } catch (InvalidKeyException e) {
-                    showDialog(DIALOG_INVALID_KEY);
-                    e.printStackTrace();
-                } catch (SignatureException e) {
-                    showDialog(DIALOG_INVALID_SIGN_CERTIFICATE);
-                    e.printStackTrace();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+					KeyStore.getInstance().setCertificate(AndroidRsaConstants.OWN_ALIAS,
+							RSA.getCertificate(mChosenFilePath));
+					
+					// loading keystore
+					KeyStore.getInstance().setPk(FileUtils.readFileToByteArray(mKey));
 
-            } else {
-                showDialog(DIALOG_KEY_NOT_FOUND);
-            }
+					KeyStore.getInstance().setPb(RSA.getCAPublicKey(getApplicationContext()));
 
-        } else {
-            showDialog(DIALOG_NOT_CHOSEN);
-        }
+					KeyStore.getInstance().getCertificate(AndroidRsaConstants.OWN_ALIAS)
+							.verify(KeyStore.getInstance().getPb());
 
-    }
+					// user have been registered
+					SharedPreferences prefs = getSharedPreferences(AndroidRsaConstants.SHARED_PREFERENCE_FILE,
+							Context.MODE_PRIVATE);
+					Editor prefsEditor = prefs.edit();
+					prefsEditor.putString(AndroidRsaConstants.CERT_PATH, mChosenFilePath);
+					prefsEditor.apply();
+
+					// Applying steganography
+					Intent i = new Intent(getApplicationContext(), EncodeActivity.class);
+					i.putExtra(AndroidRsaConstants.FILE_PATH, mChosenFilePath);
+					i.putExtra(AndroidRsaConstants.IMAGE_PATH, mChosenImagePath);
+					i.putExtra(AndroidRsaConstants.PASSPHRASE, passphrase);
+					startActivity(i);
+
+				} catch (CertificateException e) {
+					showDialog(DIALOG_INVALID_CERTIFICATE);
+					e.printStackTrace();
+				} catch (InvalidKeyException e) {
+					showDialog(DIALOG_INVALID_KEY);
+					e.printStackTrace();
+				} catch (SignatureException e) {
+					showDialog(DIALOG_INVALID_SIGN_CERTIFICATE);
+					e.printStackTrace();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+			} else {
+				showDialog(DIALOG_KEY_NOT_FOUND);
+			}
+
+		} else {
+			showDialog(DIALOG_NOT_CHOSEN);
+		}
+
+	}
 }
