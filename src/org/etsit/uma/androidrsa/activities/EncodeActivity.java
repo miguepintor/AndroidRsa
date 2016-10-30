@@ -27,11 +27,13 @@ import android.os.Bundle;
 import android.os.Handler;
 
 public class EncodeActivity extends Activity {
-	private final MobiProgressBar progressBar = new MobiProgressBar(EncodeActivity.this);
-
+	private MobiProgressBar progressBar;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		progressBar = new MobiProgressBar(EncodeActivity.this);
 
 		// Obtaning intent information
 		Bundle bundle = getIntent().getExtras();

@@ -41,7 +41,7 @@ public class Decoder {
             Log.e(TAG, "NO STEGO IMAGE");
         } else {
             convertToFile(vvv);
-            return RSA.getCertificate(AndroidRsaConstants.DECODED_CERT_PATH);
+            return RSA.readCertificate(AndroidRsaConstants.DECODED_CERT_PATH);
         }
         return null;
     }

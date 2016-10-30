@@ -57,11 +57,12 @@ public class LoginActivity extends Activity {
 
 		if (prefs.getBoolean(AndroidRsaConstants.REGISTERED, false)) {
 			try {
-				File file = new File(AndroidRsaConstants.OWN_KEY_PATH);
+				File file = new File(prefs.getString(AndroidRsaConstants.KEY_PATH, ""));
+				
 				KeyStore.getInstance().setPk(FileUtils.readFileToByteArray(file));
 				KeyStore.getInstance().setPb(RSA.getCAPublicKey(this));
 				KeyStore.getInstance().setCertificate(AndroidRsaConstants.OWN_ALIAS,
-						RSA.getCertificate(prefs.getString(AndroidRsaConstants.CERT_PATH, "")));
+						RSA.readCertificate(prefs.getString(AndroidRsaConstants.CERT_PATH, "")));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

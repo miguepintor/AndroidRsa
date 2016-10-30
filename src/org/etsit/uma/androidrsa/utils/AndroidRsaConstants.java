@@ -45,10 +45,12 @@ public class AndroidRsaConstants {
 	public static final String FILE_PATH = "file_path";
 	public static final String PASSPHRASE = "passphrase";
 	public static final String DEST_JID = "destJid";
+	public static final String KEY_FILE_PATH = "key_file_path";
 
 	// Constants for preferences
 	public static final String SHARED_PREFERENCE_FILE = "SHARED_PREFERENCE_FILE";
 	public static final String CERT_PATH = "cert_path";
+	public static final String KEY_PATH = "key_path";
 	public static final String ENCODED_IMAGE_PATH = "encoded_image_path";
 	public static final String USERID = "user_id";
 	public static final String SERVICE = "service";

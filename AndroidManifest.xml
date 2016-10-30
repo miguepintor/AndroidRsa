@@ -41,6 +41,10 @@
             android:name="org.etsit.uma.androidrsa.activities.DecodeActivity"
             android:noHistory="true" >
         </activity>
+         <activity
+            android:name="org.etsit.uma.androidrsa.activities.EncryptationPasswordActivity"
+            android:noHistory="true" >
+        </activity>
         <activity
             android:name="org.etsit.uma.androidrsa.activities.ContactsActivity"
             android:label="@string/app_name" >
