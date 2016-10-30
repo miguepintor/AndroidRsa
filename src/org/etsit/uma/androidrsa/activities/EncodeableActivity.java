@@ -72,8 +72,8 @@ public abstract class EncodeableActivity extends Activity {
 			KeyStore.getInstance().setCertificate(AndroidRsaConstants.OWN_ALIAS,
 					RSA.readCertificate(mChosenCertificatePath));
 			KeyStore.getInstance().setPk(FileUtils.readFileToByteArray(new File(mChosenKeyPath)));
-			KeyStore.getInstance().setPb(RSA.getCAPublicKey(getApplicationContext()));
-			KeyStore.getInstance().getCertificate(AndroidRsaConstants.OWN_ALIAS).verify(KeyStore.getInstance().getPb());
+			KeyStore.getInstance().setCaPb(RSA.getCAPublicKey(getApplicationContext()));
+			KeyStore.getInstance().getCertificate(AndroidRsaConstants.OWN_ALIAS).verify(KeyStore.getInstance().getCaPb());
 
 			// user have been registered
 			SharedPreferences prefs = getSharedPreferences(AndroidRsaConstants.SHARED_PREFERENCE_FILE,

@@ -11,7 +11,7 @@ public class KeyStore {
     private static KeyStore Instance = new KeyStore();
     private Map<String, Certificate> data;
     private byte[] pk;
-    private PublicKey pb;
+    private PublicKey caPb;
 
     private KeyStore() {
         data = new HashMap<String, Certificate>();
@@ -21,12 +21,8 @@ public class KeyStore {
         return Instance;
     }
 
-    public void setPk(byte[] pk) {
-        this.pk = pk;
-    }
-
-    public void setPb(PublicKey pb) {
-        this.pb = pb;
+    public Certificate getCertificate(String alias) {
+        return data.get(alias);
     }
 
     public void setCertificate(String alias, Certificate cert) {
@@ -38,15 +34,19 @@ public class KeyStore {
         }
     }
 
-    public Certificate getCertificate(String alias) {
-        return data.get(alias);
+    public PublicKey getCaPb() {
+        return caPb;
     }
-
-    public PublicKey getPb() {
-        return pb;
+    
+    public void setCaPb(PublicKey caPb) {
+        this.caPb = caPb;
     }
 
     public byte[] getPk() {
         return pk;
+    }
+    
+    public void setPk(byte[] pk) {
+        this.pk = pk;
     }
 }

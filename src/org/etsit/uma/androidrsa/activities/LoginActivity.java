@@ -60,7 +60,7 @@ public class LoginActivity extends Activity {
 				File file = new File(prefs.getString(AndroidRsaConstants.KEY_PATH, ""));
 				
 				KeyStore.getInstance().setPk(FileUtils.readFileToByteArray(file));
-				KeyStore.getInstance().setPb(RSA.getCAPublicKey(this));
+				KeyStore.getInstance().setCaPb(RSA.getCAPublicKey(this));
 				KeyStore.getInstance().setCertificate(AndroidRsaConstants.OWN_ALIAS,
 						RSA.readCertificate(prefs.getString(AndroidRsaConstants.CERT_PATH, "")));
 			} catch (Exception e) {
