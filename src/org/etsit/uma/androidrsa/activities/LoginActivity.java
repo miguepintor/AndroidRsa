@@ -9,7 +9,6 @@ import org.etsit.uma.androidrsa.asynctask.LoginTask;
 import org.etsit.uma.androidrsa.rsa.KeyStore;
 import org.etsit.uma.androidrsa.rsa.RSA;
 import org.etsit.uma.androidrsa.utils.AndroidRsaConstants;
-import org.jivesoftware.smack.Connection;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -23,16 +22,21 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 public class LoginActivity extends Activity {
 	private static final String TAG = "LoginActivity";
 	private SharedPreferences prefs;
-	private Connection connection;
-	private String selectedItem;
-	private String userid;
-	private String password;
+
+	public String service;
+	public String username;
+	public String password;
+	public String host;
+	public int port;
+	public String xmppService;
+	public boolean isCustomService;
 	private LoginTask task;
 
 	/** Called when the activity is first created. */
@@ -48,7 +52,23 @@ public class LoginActivity extends Activity {
 		spinner.setAdapter(adapter);
 		spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-				selectedItem = (String) parent.getItemAtPosition(pos);
+				service = (String) parent.getItemAtPosition(pos);
+				isCustomService = service.equals(getResources().getString(R.string.custom));
+				if(isCustomService){
+					LinearLayout hostLayout = (LinearLayout) findViewById(R.id.host_layout);
+					LinearLayout portLayout = (LinearLayout) findViewById(R.id.port_layout);
+					LinearLayout serviceLayout = (LinearLayout) findViewById(R.id.xmpp_service_layout);
+					hostLayout.setVisibility(View.VISIBLE);
+					portLayout.setVisibility(View.VISIBLE);
+					serviceLayout.setVisibility(View.VISIBLE);
+				} else {
+					LinearLayout hostLayout = (LinearLayout) findViewById(R.id.host_layout);
+					LinearLayout portLayout = (LinearLayout) findViewById(R.id.port_layout);
+					LinearLayout serviceLayout = (LinearLayout) findViewById(R.id.xmpp_service_layout);
+					hostLayout.setVisibility(View.GONE);
+					portLayout.setVisibility(View.GONE);
+					serviceLayout.setVisibility(View.GONE);
+				}
 			}
 
 			public void onNothingSelected(AdapterView<?> parent) {
@@ -91,18 +111,31 @@ public class LoginActivity extends Activity {
 	}
 
 	public void login(View v) {
-		userid = ((EditText) findViewById(R.id.userid)).getText().toString();
+		username = ((EditText) findViewById(R.id.userid)).getText().toString();
 		password = ((EditText) findViewById(R.id.password)).getText().toString();
-		if (userid != null && !userid.isEmpty() && password != null && !password.isEmpty()) {
+		
+		boolean customCheck = true;
+		if(isCustomService){
+			host = ((EditText) findViewById(R.id.host)).getText().toString();
+			String portStr = ((EditText) findViewById(R.id.port)).getText().toString();
+			xmppService = ((EditText) findViewById(R.id.xmpp_service)).getText().toString();
+			if (host == null || host.isEmpty() || xmppService == null || xmppService.isEmpty() || portStr == null || portStr.isEmpty()){
+				customCheck = false;
+			} else {
+				port = Integer.parseInt(portStr);
+			}
+		}
+			
+		if (username != null && !username.isEmpty() && password != null && !password.isEmpty() && customCheck) {
 			// Saving passphrase
 			Editor editor = prefs.edit();
-			editor.putString(AndroidRsaConstants.SERVICE, selectedItem);
-			editor.putString(AndroidRsaConstants.USERID, userid);
+			editor.putString(AndroidRsaConstants.SERVICE, service);
+			editor.putString(AndroidRsaConstants.USERID, username);
 			editor.apply();
 
 			// Check we've been run once.
 
-			task = new LoginTask(this, connection, selectedItem, userid, password, this);
+			task = new LoginTask(this);
 			task.execute();
 		} else {
 			Toast.makeText(this, getResources().getString(R.string.info_empty_fields), Toast.LENGTH_LONG).show();

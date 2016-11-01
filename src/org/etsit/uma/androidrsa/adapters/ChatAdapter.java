@@ -8,7 +8,7 @@ import java.util.HashMap;
 
 import org.etsit.uma.androidrsa.R;
 import org.etsit.uma.androidrsa.xmpp.AvatarsCache;
-import org.etsit.uma.androidrsa.xmpp.Conexion;
+import org.etsit.uma.androidrsa.xmpp.ConnectionManager;
 import org.jivesoftware.smack.packet.Message;
 
 import android.content.Context;
@@ -39,7 +39,7 @@ public class ChatAdapter extends ArrayAdapter<Message> {
         super(context, R.layout.chat_row, listMessages);
         this.context = context;
         this.list = listMessages;
-        myJid = Conexion.getInstance().getUser();
+        myJid = ConnectionManager.getInstance().getUser();
         this.avatarMap = AvatarsCache.getInstance();
         this.avatarMap.put(myJid, AvatarsCache.getMyAvatar());
     }

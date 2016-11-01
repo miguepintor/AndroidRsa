@@ -24,6 +24,6 @@ public class RosterManager {
 	}
 	
 	public static void innit(){
-		roster = Conexion.getInstance().getRoster();
+		roster = ConnectionManager.getInstance().getRoster();
 	}
 }

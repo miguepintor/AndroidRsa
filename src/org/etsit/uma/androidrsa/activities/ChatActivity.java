@@ -15,8 +15,8 @@ import org.etsit.uma.androidrsa.rsa.RSA;
 import org.etsit.uma.androidrsa.steganography.Decoder;
 import org.etsit.uma.androidrsa.utils.AndroidRsaConstants;
 import org.etsit.uma.androidrsa.xmpp.AvatarsCache;
-import org.etsit.uma.androidrsa.xmpp.ChatMan;
-import org.etsit.uma.androidrsa.xmpp.Conexion;
+import org.etsit.uma.androidrsa.xmpp.ConversationManager;
+import org.etsit.uma.androidrsa.xmpp.ConnectionManager;
 import org.etsit.uma.androidrsa.xmpp.RosterManager;
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.MessageListener;
@@ -110,7 +110,7 @@ public class ChatActivity extends ListActivity {
 		myListView = getListView();
 		myListView.setDivider(null);
 
-		myJid = Conexion.getInstance().getUser();
+		myJid = ConnectionManager.getInstance().getUser();
 		passPhrase = getIntent().getStringExtra(AndroidRsaConstants.PASSPHRASE);
 
 		setDestinationProperties(getIntent().getStringExtra(AndroidRsaConstants.DEST_JID));
@@ -153,13 +153,13 @@ public class ChatActivity extends ListActivity {
 
 	private void initializeMessageListener() {
 		Chat destChat;
-		if (ChatMan.openedChats.containsKey(destJid)) {
-			destChat = ChatMan.openedChats.get(destJid);
+		if (ConversationManager.openedChats.containsKey(destJid)) {
+			destChat = ConversationManager.openedChats.get(destJid);
 			if (destChat.getListeners().isEmpty()) {
 				destChat.addMessageListener(messageListener);
 			}
 		} else {
-			destChat = ChatMan.createChat(destJid, messageListener);
+			destChat = ConversationManager.createChat(destJid, messageListener);
 			if (cipher) {
 				Message m = new Message(destJid);
 				try {
@@ -205,7 +205,7 @@ public class ChatActivity extends ListActivity {
 		}
 
 		try {
-			ChatMan.openedChats.get(destJid).sendMessage(message);
+			ConversationManager.openedChats.get(destJid).sendMessage(message);
 		} catch (XMPPException e) {
 			Log.e(TAG, "ERROR al enviar mensaje");
 			e.printStackTrace();

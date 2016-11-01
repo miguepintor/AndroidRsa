@@ -34,7 +34,7 @@ public class AvatarsCache {
             ProviderManager.getInstance().addIQProvider("vCard",
                     "vcard-temp",
                     new VCardProvider());
-            vCard.load(Conexion.getInstance());
+            vCard.load(ConnectionManager.getInstance());
             if (vCard.getAvatar() != null) {
                 Log.d(TAG, "No es NULL");
                 byte[] avatarRaw = vCard.getAvatar();
@@ -57,7 +57,7 @@ public class AvatarsCache {
             ProviderManager.getInstance().addIQProvider("vCard",
                     "vcard-temp",
                     new VCardProvider());
-            vCard.load(Conexion.getInstance(), StringUtils.parseBareAddress(jid));
+            vCard.load(ConnectionManager.getInstance(), StringUtils.parseBareAddress(jid));
             if (vCard.getAvatar() != null) {
                 byte[] avatarRaw = vCard.getAvatar();
                 if (avatarRaw.length != 0) {

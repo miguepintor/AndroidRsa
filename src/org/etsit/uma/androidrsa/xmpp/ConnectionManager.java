@@ -1,6 +1,7 @@
 
 package org.etsit.uma.androidrsa.xmpp;
 
+import org.etsit.uma.androidrsa.R;
 import org.etsit.uma.androidrsa.utils.AndroidRsaConstants;
 import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.ConnectionConfiguration;
@@ -9,18 +10,19 @@ import org.jivesoftware.smack.SmackConfiguration;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 
+import android.content.res.Resources;
 import android.util.Log;
 
-public class Conexion {
+public class ConnectionManager {
 	private static final String TAG = "Conexion";
 	private static Connection con = null;
 
-	public Conexion() {
+	public ConnectionManager() {
 		super();
 	}
 
-	public static Connection innit(String service, String userid, String password) throws XMPPException {
-		if (service.equals("Openfire")) {
+	public static void innit(Resources resources, String service, String userid, String password) throws XMPPException {
+		if (service.equals(resources.getString(R.string.openfire))) {
 			SmackConfiguration.setPacketReplyTimeout(60000);
 			Log.d(TAG, "Creando una conexión con " + AndroidRsaConstants.OPENFIRE_HOST + ":"
 					+ AndroidRsaConstants.OPENFIRE_PORT);
@@ -35,7 +37,7 @@ public class Conexion {
 			con = new XMPPConnection(config);
 			con.connect();
 			con.login(userid, password, AndroidRsaConstants.ANDROIDRSA_APP_NAME);
-		} else if (service.equals("Gmail")) {
+		} else if (service.equals(resources.getString(R.string.gmail))) {
 			SmackConfiguration.setPacketReplyTimeout(60000);
 			Log.d(TAG, "Creando una conexión con " + AndroidRsaConstants.GMAIL_HOST + ":"
 					+ AndroidRsaConstants.GMAIL_PORT);
@@ -50,26 +52,29 @@ public class Conexion {
 			con = new XMPPConnection(config);
 			con.connect();
 			con.login(userid, password, AndroidRsaConstants.ANDROIDRSA_APP_NAME);
-		} else if (service.equals("Facebook")) {
-			ConnectionConfiguration config = new ConnectionConfiguration("chat.facebook.com", 5222);
-			config.setSASLAuthenticationEnabled(true);
-
-			SmackConfiguration.setPacketReplyTimeout(15000);
-			XMPPConnection.DEBUG_ENABLED = true;
-			SASLAuthentication.registerSASLMechanism("X-FACEBOOK-PLATFORM", SASLXFacebookPlatformMechanism.class);
-			SASLAuthentication.supportSASLMechanism("X-FACEBOOK-PLATFORM", 0);
-			con = new XMPPConnection(config);
-			con.connect();
-			String apiKey = "3290292390239";
-			String accessToken = "ADSJDSJKDKSJKSJD0-43DKJSDJKSDKJSD094JJSDKJSDKJDSNDSKJNSDLkljdkjs";
-			con.login(apiKey, accessToken);
 		} else {
 			con = null;
 		}
-		
-		RosterManager.innit();
 
-		return con;
+		RosterManager.innit();
+	}
+
+	public static void innitCustomService(String userid, String password, String host, int port, String xmppService)
+			throws XMPPException {
+
+		SmackConfiguration.setPacketReplyTimeout(60000);
+		Log.d(TAG, "Creating custom connection with " + host + ":" + port);
+		ConnectionConfiguration config = new ConnectionConfiguration(host, port, xmppService);
+		config.setDebuggerEnabled(true);
+		XMPPConnection.DEBUG_ENABLED = true;
+		SASLAuthentication.supportSASLMechanism("PLAIN", 0);
+		config.setSASLAuthenticationEnabled(true);
+
+		con = new XMPPConnection(config);
+		con.connect();
+		con.login(userid, password, AndroidRsaConstants.ANDROIDRSA_APP_NAME);
+
+		RosterManager.innit();
 	}
 
 	public static Connection getInstance() {

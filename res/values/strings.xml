@@ -52,10 +52,13 @@
     <string name="invalid_key">Invalid Key file.</string>
     <string name="invalid_encryption_password">Invalid encryption password.</string>
     <string-array name="services_array">
-        <item>Openfire</item>
-        <item>Gmail</item>
-        <item>Facebook</item>
+        <item>@string/openfire</item>
+        <item>@string/gmail</item>
+        <item>@string/custom</item>
     </string-array>
+    <string name="custom">Custom</string>
+    <string name="openfire">Openfire</string>
+    <string name="gmail">Gmail</string>
     <string name="invalid_sign_certificate">Invalid sign of certificate.</string>
     <string name="image_too_large">The image is too large.</string>
     <string name="image_size_fail">The size of the image is too large.</string>
@@ -65,6 +68,8 @@
     <string name="contacts">Contacts</string>
     <string name="send">Send</string>
     <string name="is_talking">is talking</string>
-    
-
+    <string name="login_host">Host:</string>
+    <string name="login_port">Port:</string>
+	<string name="logining"> Login in... </string>
+	<string name="login_xmpp_service">XMPP Service:</string>
 </resources>

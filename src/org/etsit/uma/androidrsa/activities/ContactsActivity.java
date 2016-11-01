@@ -11,8 +11,8 @@ import org.etsit.uma.androidrsa.adapters.ContactsAdapter;
 import org.etsit.uma.androidrsa.utils.AndroidRsaConstants;
 import org.etsit.uma.androidrsa.utils.PresenceComparator;
 import org.etsit.uma.androidrsa.xmpp.AvatarsCache;
-import org.etsit.uma.androidrsa.xmpp.ChatMan;
-import org.etsit.uma.androidrsa.xmpp.Conexion;
+import org.etsit.uma.androidrsa.xmpp.ConversationManager;
+import org.etsit.uma.androidrsa.xmpp.ConnectionManager;
 import org.etsit.uma.androidrsa.xmpp.RosterManager;
 import org.etsit.uma.androidrsa.xmpp.Status;
 import org.jivesoftware.smack.Connection;
@@ -46,7 +46,7 @@ public class ContactsActivity extends ListActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		connection = Conexion.getInstance();
+		connection = ConnectionManager.getInstance();
 
 		Roster.setDefaultSubscriptionMode(Roster.SubscriptionMode.accept_all);
 		RosterManager.getRosterInstance().setSubscriptionMode(Roster.SubscriptionMode.accept_all);
@@ -55,7 +55,7 @@ public class ContactsActivity extends ListActivity {
 
 		loadUI();
 
-		ChatMan.initListener(this);
+		ConversationManager.initListener(this);
 
 		RosterManager.getRosterInstance().addRosterListener(new RosterListener() {
 			public void entriesDeleted(Collection<String> addresses) {
@@ -197,8 +197,8 @@ public class ContactsActivity extends ListActivity {
 
 	@Override
 	public void onBackPressed() {
-		Conexion.disconnect();
-		ChatMan.openedChats.clear();
+		ConnectionManager.disconnect();
+		ConversationManager.openedChats.clear();
 		
 		Intent i = new Intent(this, LoginActivity.class);
 		i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

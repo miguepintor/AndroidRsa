@@ -10,7 +10,7 @@ import org.etsit.uma.androidrsa.R;
 import org.etsit.uma.androidrsa.steganography.Encoder;
 import org.etsit.uma.androidrsa.utils.AndroidRsaConstants;
 import org.etsit.uma.androidrsa.utils.handler.MobiProgressBar;
-import org.etsit.uma.androidrsa.xmpp.Conexion;
+import org.etsit.uma.androidrsa.xmpp.ConnectionManager;
 import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.provider.ProviderManager;
 import org.jivesoftware.smackx.packet.VCard;
@@ -79,7 +79,7 @@ public class EncodeActivity extends Activity {
 	protected void notifyAvatarUpdated(String avatarPath) {
 		VCard vCard = new VCard();
 		ProviderManager.getInstance().addIQProvider("vCard", "vcard-temp", new VCardProvider());
-		Connection connection = Conexion.getInstance();
+		Connection connection = ConnectionManager.getInstance();
 		try {
 			vCard.load(connection);
 

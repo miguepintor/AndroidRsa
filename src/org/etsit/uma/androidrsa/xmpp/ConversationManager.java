@@ -14,13 +14,13 @@ import org.jivesoftware.smack.MessageListener;
 import android.content.Intent;
 import android.util.Log;
 
-public class ChatMan {
+public class ConversationManager {
 	private final static String TAG = "ChatMan";
 	public final static HashMap<String, Chat> openedChats = new HashMap<String, Chat>(); 
 
 	public static void initListener(final ContactsActivity activity) {
 		// Listener para detectar si el chat lo crea el otro
-		ChatManager chatmanager = Conexion.getInstance().getChatManager();
+		ChatManager chatmanager = ConnectionManager.getInstance().getChatManager();
 		ChatManagerListener chatManagerListener = new ChatManagerListener() {
 			public void chatCreated(Chat chat, boolean createdLocally) {
 				if (!createdLocally) {
@@ -44,7 +44,7 @@ public class ChatMan {
 	}
 
 	public static Chat createChat(String jidDest, MessageListener messageListener) {
-		ChatManager chatmanager = Conexion.getInstance().getChatManager();
+		ChatManager chatmanager = ConnectionManager.getInstance().getChatManager();
 		Chat chat = chatmanager.createChat(jidDest, messageListener);
 		openedChats.put(jidDest, chat);
 		return chat;
