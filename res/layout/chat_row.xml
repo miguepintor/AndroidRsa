@@ -8,7 +8,6 @@
     android:orientation="vertical" >
 
     <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/chat_imgtext_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" >
@@ -26,13 +25,12 @@
         </ImageView>
 
         <TextView
-            xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/body"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dip"
             android:text="mensaje"
-            android:textColor="@color/negro"
+            android:textColor="@color/black"
             android:textSize="20dip"
             android:textStyle="bold" >
         </TextView>
@@ -43,11 +41,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:background="@color/grisecillo"
+        android:background="@color/gray"
         android:layout_gravity="bottom|right"
         android:padding="1dip"
         android:text="@string/hora_default"
-        android:textColor="@color/negro"
+        android:textColor="@color/black"
         android:textSize="10dip" />
 
 </LinearLayout>

@@ -9,12 +9,12 @@
         android:id="@+id/chat_title"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="@color/background_floating_material_dark"
+        android:background="@color/dark_blue"
         android:gravity="center"
         android:shadowColor="#888"
         android:shadowDy="1.0"
         android:shadowRadius="1"
-        android:textColor="@color/background_material_light"
+        android:textColor="@color/white"
         android:textSize="35sp" />
 
     <ListView
@@ -22,7 +22,8 @@
         android:layout_width="match_parent"
         android:layout_height="357dp"
         android:layout_weight="0.91"
-        android:clickable="false" >
+        android:clickable="false"
+        android:background="@color/light_blue" >
     </ListView>
 
     <LinearLayout
@@ -33,13 +34,15 @@
         android:orientation="horizontal"
         android:paddingBottom="5dp"
         android:paddingLeft="5dp"
-        android:paddingRight="5dp" >
+        android:paddingRight="5dp" 
+        android:background="@color/light_blue">
 
         <EditText
             android:id="@+id/textInput"
             android:layout_width="0dip"
             android:layout_height="45dp"
-            android:layout_weight="1" >
+            android:layout_weight="1" 
+            android:textColor="@color/dark_blue">
 
             <requestFocus>
             </requestFocus>
@@ -51,10 +54,10 @@
             android:layout_height="45dp"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:background="@color/background_material_light"
+            android:background="@color/dark_blue"
             android:onClick="send"
             android:text="@string/send"
-            android:textColor="@color/background_floating_material_dark" >
+            android:textColor="@color/white" >
         </Button>
     </LinearLayout>
 

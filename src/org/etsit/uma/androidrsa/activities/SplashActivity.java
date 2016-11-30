@@ -25,10 +25,10 @@ public class SplashActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.splash);
-		StartAnimations();
+		startAnimations();
 	}
 
-	private void StartAnimations() {
+	private void startAnimations() {
 		Animation anim = AnimationUtils.loadAnimation(this, R.anim.alpha);
 		anim.reset();
 		LinearLayout l = (LinearLayout) findViewById(R.id.lin_lay);
