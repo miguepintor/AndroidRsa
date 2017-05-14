@@ -1,6 +1,8 @@
 
 package org.etsit.uma.androidrsa.xmpp;
 
+import java.util.List;
+
 import org.etsit.uma.androidrsa.R;
 import org.etsit.uma.androidrsa.utils.AndroidRsaConstants;
 import org.jivesoftware.smack.Connection;
@@ -31,7 +33,9 @@ public class ConnectionManager {
 					AndroidRsaConstants.OPENFIRE_PORT, AndroidRsaConstants.OPENFIRE_SERVICE);
 			config.setDebuggerEnabled(true);
 			XMPPConnection.DEBUG_ENABLED = true;
-			SASLAuthentication.supportSASLMechanism("PLAIN", 0);
+			List<Class> clases = SASLAuthentication.getRegisterSASLMechanisms();
+			SASLAuthentication.supportSASLMechanism("DIGEST-MD5", 0);
+			
 			config.setSASLAuthenticationEnabled(true);
 
 			con = new XMPPConnection(config);
