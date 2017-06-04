@@ -19,7 +19,7 @@ public class ConversationManager {
 	public final static HashMap<String, Chat> openedChats = new HashMap<String, Chat>(); 
 
 	public static void initListener(final ContactsActivity activity) {
-		// Listener para detectar si el chat lo crea el otro
+		// Listener to detect if someone else has created the chat
 		ChatManager chatmanager = ConnectionManager.getInstance().getChatManager();
 		ChatManagerListener chatManagerListener = new ChatManagerListener() {
 			public void chatCreated(Chat chat, boolean createdLocally) {

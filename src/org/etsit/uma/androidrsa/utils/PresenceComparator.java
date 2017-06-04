@@ -1,4 +1,3 @@
-
 package org.etsit.uma.androidrsa.utils;
 
 import java.util.Comparator;
@@ -10,7 +9,6 @@ public class PresenceComparator implements Comparator<Presence> {
 
     public PresenceComparator() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
     public int compare(Presence p1, Presence p2) {

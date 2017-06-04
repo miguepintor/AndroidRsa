@@ -67,7 +67,7 @@ public class ConnectionManager {
 			throws XMPPException {
 
 		SmackConfiguration.setPacketReplyTimeout(60000);
-		Log.d(TAG, "Creating custom connection with " + host + ":" + port);
+		Log.d(TAG, "Cerando una conexión personalizada con " + host + ":" + port);
 		ConnectionConfiguration config = new ConnectionConfiguration(host, port, xmppService);
 		config.setDebuggerEnabled(true);
 		XMPPConnection.DEBUG_ENABLED = true;

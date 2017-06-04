@@ -1,4 +1,3 @@
-
 package org.etsit.uma.androidrsa.activities;
 
 import java.io.File;
@@ -191,13 +190,13 @@ public class RegisterActivity extends EncodeableActivity {
 				cursor.moveToFirst();
 
 				int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-				// file path of selected image
+				// File path of selected image
 				mChosenImagePath = cursor.getString(columnIndex);
 				cursor.close();
 				// Convert file path into bitmap image using below line.
 				mChosenImage = BitmapFactory.decodeFile(mChosenImagePath);
 
-				// put bitmapimage in imageview
+				// Put bitmapimage in imageview
 				ImageView img = (ImageView) findViewById(R.id.image);
 				img.setImageBitmap(mChosenImage);
 

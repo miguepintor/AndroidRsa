@@ -1,4 +1,3 @@
-
 package org.etsit.uma.androidrsa.xmpp;
 
 import org.etsit.uma.androidrsa.utils.AndroidRsaConstants;

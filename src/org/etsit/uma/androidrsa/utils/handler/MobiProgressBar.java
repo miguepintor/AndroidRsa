@@ -1,4 +1,3 @@
-
 package org.etsit.uma.androidrsa.utils.handler;
 
 import android.app.ProgressDialog;

@@ -8,7 +8,7 @@ import android.util.AttributeSet;
 import android.widget.ImageView;
 
 public class RoundedImageView extends ImageView {
-	//you can change the radius to modify the circlur shape into oval or rounded rectangle
+	//you can change the radius to modify the circular shape into oval or rounded rectangle
 
 	public static float radius = 100.0f;
 
@@ -26,7 +26,6 @@ public class RoundedImageView extends ImageView {
 
 	@Override
 	protected void onDraw(Canvas canvas) {
-	//float radius = 36.0f;
 	Path clipPath = new Path();
 	RectF rect = new RectF(0, 0, this.getWidth(), this.getHeight());
 	clipPath.addRoundRect(rect, radius, radius, Path.Direction.CW);

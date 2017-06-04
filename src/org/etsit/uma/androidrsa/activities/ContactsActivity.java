@@ -1,4 +1,3 @@
-
 package org.etsit.uma.androidrsa.activities;
 
 import java.util.ArrayList;
@@ -59,17 +58,17 @@ public class ContactsActivity extends ListActivity {
 
 		RosterManager.getRosterInstance().addRosterListener(new RosterListener() {
 			public void entriesDeleted(Collection<String> addresses) {
-				Log.d(TAG, "EntriesDeleted: " + addresses.toString());
+				Log.d(TAG, "Entradas borradas: " + addresses.toString());
 				refreshAdapter();
 			}
 
 			public void entriesUpdated(Collection<String> addresses) {
-				Log.d(TAG, "EntriesUpdated: " + addresses.toString());
+				Log.d(TAG, "Entradas actualizadas: " + addresses.toString());
 				refreshAdapter();
 			}
 
 			public void presenceChanged(Presence presence) {
-				Log.d(TAG, "Presence changed: " + presence.getFrom() + " " + presence.getMode());
+				Log.d(TAG, "Presencia modificada: " + presence.getFrom() + " " + presence.getMode());
 				removePresence(presence);
 				String name = StringUtils.parseName(presence.getFrom());
 				presence.setProperty("name", name);
@@ -81,7 +80,7 @@ public class ContactsActivity extends ListActivity {
 			}
 
 			public void entriesAdded(Collection<String> addresses) {
-				Log.d(TAG, "EntriesAdded: " + addresses.toString());
+				Log.d(TAG, "Entradas añadidas: " + addresses.toString());
 				refreshAdapter();
 			}
 		});
@@ -162,7 +161,7 @@ public class ContactsActivity extends ListActivity {
 		case R.id.available:
 			Presence presence = new Presence(Presence.Type.available);
 			presence.setMode(Presence.Mode.available);
-			presence.setStatus("aqui estamos ya!");
+			presence.setStatus("Aqui estamos ya!");
 			connection.sendPacket(presence);
 			return true;
 		case R.id.away:

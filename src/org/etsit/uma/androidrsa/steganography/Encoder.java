@@ -1,4 +1,3 @@
-
 package org.etsit.uma.androidrsa.steganography;
 
 import java.io.BufferedReader;
@@ -91,13 +90,13 @@ public class Encoder {
 		byteImage = null;
 		Log.v("Encode", "" + oneDMod[0]);
 		Log.v("Encode Alpha", "" + (oneDMod[0] >> 24 & 0xFF));
-		Log.v("Encode Red", "" + (oneDMod[0] >> 16 & 0xFF));
-		Log.v("Encode Green", "" + (oneDMod[0] >> 8 & 0xFF));
-		Log.v("Encode Blue", "" + (oneDMod[0] & 0xFF));
+		Log.v("Encode Rojo", "" + (oneDMod[0] >> 16 & 0xFF));
+		Log.v("Encode Verde", "" + (oneDMod[0] >> 8 & 0xFF));
+		Log.v("Encode Azul", "" + (oneDMod[0] & 0xFF));
 
 		System.gc();
-		Log.v("Free memory", Runtime.getRuntime().freeMemory() + "");
-		Log.v("Image mesure", (width * height * 32 / 8) + "");
+		Log.v("Memoria liberada", Runtime.getRuntime().freeMemory() + "");
+		Log.v("Tamaño de la imagen", (width * height * 32 / 8) + "");
 
 		Bitmap destBitmap = Bitmap.createBitmap(width, height, Config.ARGB_8888);
 
@@ -106,8 +105,7 @@ public class Encoder {
 		int masterIndex = 0;
 		for (int j = 0; j < height; j++)
 			for (int i = 0; i < width; i++) {
-				// The unique way to write correctly the sourceBitmap, android
-				// bug!!!
+				// The unique way to write correctly the sourceBitmap, android. bug!!!
 				destBitmap.setPixel(i, j, Color.argb(0xFF, oneDMod[masterIndex] >> 16 & 0xFF,
 						oneDMod[masterIndex] >> 8 & 0xFF, oneDMod[masterIndex++] & 0xFF));
 				if (masterIndex % partialProgr == 0)
@@ -116,9 +114,9 @@ public class Encoder {
 		handler.post(mSetInderminate);
 		Log.v("Encode", "" + destBitmap.getPixel(0, 0));
 		Log.v("Encode Alpha", "" + (destBitmap.getPixel(0, 0) >> 24 & 0xFF));
-		Log.v("Encode Red", "" + (destBitmap.getPixel(0, 0) >> 16 & 0xFF));
-		Log.v("Encode Green", "" + (destBitmap.getPixel(0, 0) >> 8 & 0xFF));
-		Log.v("Encode Blue", "" + (destBitmap.getPixel(0, 0) & 0xFF));
+		Log.v("Encode Rojo", "" + (destBitmap.getPixel(0, 0) >> 16 & 0xFF));
+		Log.v("Encode Verde", "" + (destBitmap.getPixel(0, 0) >> 8 & 0xFF));
+		Log.v("Encode Azul", "" + (destBitmap.getPixel(0, 0) & 0xFF));
 		
 		String destPath = null;
 		int indexSepar = absoluteFilePathSource.lastIndexOf(File.separator);

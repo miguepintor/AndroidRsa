@@ -1,4 +1,3 @@
-
 package org.etsit.uma.androidrsa.utils.handler;
 
 public interface ProgressHandler {

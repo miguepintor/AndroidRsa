@@ -1,4 +1,3 @@
-
 package org.etsit.uma.androidrsa.activities;
 
 import java.io.File;
@@ -90,14 +89,14 @@ public class LoginActivity extends Activity {
 
 	}
 
-	// Carga los campos de la última ejecución
+	// Load the last values of the fields
 	private void loadPreferences() {
 		prefs = getSharedPreferences(AndroidRsaConstants.SHARED_PREFERENCE_FILE, Context.MODE_PRIVATE);
 		if (!prefs.getString(AndroidRsaConstants.USERID, "default").equals("default")) {
 			EditText e = (EditText) findViewById(R.id.userid);
 			e.setText(prefs.getString(AndroidRsaConstants.USERID, "default"));
 		}
-		// Cuenta gmail de accounts manager
+		// Gmail account obtained from the accounts manager
 		else if (prefs.getString("userid", "default").equals("default")) {
 			String userid = "";
 			EditText e = (EditText) findViewById(R.id.userid);
@@ -127,13 +126,10 @@ public class LoginActivity extends Activity {
 		}
 			
 		if (username != null && !username.isEmpty() && password != null && !password.isEmpty() && customCheck) {
-			// Saving passphrase
 			Editor editor = prefs.edit();
 			editor.putString(AndroidRsaConstants.SERVICE, service);
 			editor.putString(AndroidRsaConstants.USERID, username);
 			editor.apply();
-
-			// Check we've been run once.
 
 			task = new LoginTask(this);
 			task.execute();

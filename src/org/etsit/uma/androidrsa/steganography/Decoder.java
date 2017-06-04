@@ -1,4 +1,3 @@
-
 package org.etsit.uma.androidrsa.steganography;
 
 import java.io.BufferedWriter;
@@ -24,21 +23,21 @@ public class Decoder {
                 image.getHeight());
         Log.v("Decode", "" + pixels[0]);
         Log.v("Decode Alpha", "" + (pixels[0] >> 24 & 0xFF));
-        Log.v("Decode Red", "" + (pixels[0] >> 16 & 0xFF));
-        Log.v("Decode Green", "" + (pixels[0] >> 8 & 0xFF));
-        Log.v("Decode Blue", "" + (pixels[0] & 0xFF));
+        Log.v("Decode Rojo", "" + (pixels[0] >> 16 & 0xFF));
+        Log.v("Decode Verde", "" + (pixels[0] >> 8 & 0xFF));
+        Log.v("Decode Azul", "" + (pixels[0] & 0xFF));
         Log.v("Decode", "" + pixels[0]);
         Log.v("Decode", "" + image.getPixel(0, 0));
         byte[] b = null;
         try {
             b = convertArray(pixels);
         } catch (OutOfMemoryError er) {
-            Log.e(TAG, "OUT OF MEMORY");
+            Log.e(TAG, "Sin memoria!!");
         }
         final String vvv = LSB2bit.decodeMessage(b, image.getWidth(), image
                 .getHeight());
         if (vvv == null) {
-            Log.e(TAG, "NO STEGO IMAGE");
+            Log.e(TAG, "Imagen NO stego.");
         } else {
             convertToFile(vvv);
             return RSA.readCertificate(AndroidRsaConstants.DECODED_CERT_PATH);

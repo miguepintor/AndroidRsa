@@ -1,4 +1,3 @@
-
 package org.etsit.uma.androidrsa.activities;
 
 import org.etsit.uma.androidrsa.R;

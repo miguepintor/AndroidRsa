@@ -1,47 +1,19 @@
-
 package org.etsit.uma.androidrsa.xmpp;
 
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Presence.Mode;
 
-/**
- * Utility class to deal with status and presence value.
- * 
- * @author marseille
- */
 public final class Status {
 
-    /** Status of a disconnected contact. */
     public static final int CONTACT_STATUS_DISCONNECT = 100;
-
-    /** Status of a unavailable (long away) contact. */
     public static final int CONTACT_STATUS_UNAVAILABLE = 200;
-
-    /** Status of a away contact. */
     public static final int CONTACT_STATUS_AWAY = 300;
-
-    /** Status of a busy contact. */
     public static final int CONTACT_STATUS_BUSY = 400;
-
-    /** Status of a available contact. */
     public static final int CONTACT_STATUS_AVAILABLE = 500;
-
-    /** Status of a available for chat contact. */
     public static final int CONTACT_STATUS_AVAILABLE_FOR_CHAT = 600;
 
-    /**
-     * Default constructor masked.
-     */
-    private Status() {
-    }
+    private Status() {}
 
-    /**
-     * Get the smack presence mode for a status.
-     * 
-     * @param status the status in beem
-     * @return the presence mode to use in presence packet or null if there is
-     *         no mode to use
-     */
     public static Presence.Mode getPresenceModeFromStatus(final int status) {
         Presence.Mode res;
         switch (status) {
@@ -66,12 +38,6 @@ public final class Status {
         return res;
     }
 
-    /**
-     * Get the status of from a presence packet.
-     * 
-     * @param presence the presence containing status
-     * @return an int representing the status
-     */
     public static int getStatusFromPresence(final Presence presence) {
         int res = Status.CONTACT_STATUS_DISCONNECT;
         if (presence.getType().equals(Presence.Type.unavailable)) {
@@ -106,12 +72,6 @@ public final class Status {
         return res;
     }
 
-    /**
-     * Check if contact is online by his status.
-     * 
-     * @param status contact status
-     * @return is online
-     */
     public static boolean statusOnline(final int status) {
         return status != Status.CONTACT_STATUS_DISCONNECT;
     }

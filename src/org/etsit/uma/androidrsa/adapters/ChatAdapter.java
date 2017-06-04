@@ -1,4 +1,3 @@
-
 package org.etsit.uma.androidrsa.adapters;
 
 import java.text.SimpleDateFormat;

@@ -1,4 +1,3 @@
-
 package org.etsit.uma.androidrsa.steganography;
 
 import java.util.Vector;
@@ -21,7 +20,6 @@ public class LSB2bit {
 		byte[] msg = str.getBytes();
 		int channels = 3;
 		int shiftIndex = 4;
-		// Array.newInstance(Byte.class, imgRows * imgCols * channels);
 		byte[] result = new byte[imgRows * imgCols * channels];
 
 		if (hand != null)
@@ -73,7 +71,6 @@ public class LSB2bit {
 				v.addElement(Byte.valueOf(tmp));
 				byte[] nonso = { (v.elementAt(v.size() - 1)).byteValue() };
 				String str = new String(nonso);
-				// if (END_MESSAGE_COSTANT.equals(str)) {
 				if (builder.endsWith(END_MESSAGE_COSTANT)) {
 					break;
 				} else {
@@ -96,12 +93,12 @@ public class LSB2bit {
 	}
 
 	public static int[] byteArrayToIntArray(byte[] b) {
-		Log.v("Size byte array", b.length + "");
+		Log.v("Tamaño del array de bytes", b.length + "");
 		int size = b.length / 3;
-		Log.v("Size Int array", size + "");
+		Log.v("Tamaño del array de Ints", size + "");
 		System.runFinalization();
 		System.gc();
-		Log.v("FreeMemory", Runtime.getRuntime().freeMemory() + "");
+		Log.v("Memoria libre", Runtime.getRuntime().freeMemory() + "");
 		int[] result = new int[size];
 		int off = 0;
 		int index = 0;

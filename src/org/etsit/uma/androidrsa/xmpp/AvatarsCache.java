@@ -42,7 +42,7 @@ public class AvatarsCache {
                 return bm;
             }
             else {
-                Log.d(TAG, "Si es NULL");
+                Log.d(TAG, "Avatar es NULL");
                 return null;
             }
         } catch (XMPPException e) {

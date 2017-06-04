@@ -1,4 +1,3 @@
-
 package org.etsit.uma.androidrsa.adapters;
 
 import java.util.ArrayList;
@@ -72,7 +71,7 @@ public class ContactsAdapter extends ArrayAdapter<Presence> {
 
 	private void setIcons(ImageView iv, ImageView ivSec, Presence p, View rowview) {
 
-		// icono estado
+		// Status icon
 		int status = Status.getStatusFromPresence(p);
 		if (p.equals(Presence.Type.unsubscribed)) {
 			iv.setImageResource(R.drawable.status_unsubscribed);
@@ -85,7 +84,7 @@ public class ContactsAdapter extends ArrayAdapter<Presence> {
 			iv.setImageResource(R.drawable.status_away);
 		}
 
-		// icono RSA
+		// RSA icon
 		if (StringUtils.parseResource(p.getFrom()).startsWith(AndroidRsaConstants.ANDROIDRSA_APP_NAME)) {
 			ivSec.setImageResource(R.drawable.secure);
 			ivSec.setVisibility(View.VISIBLE);
